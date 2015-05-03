@@ -28,10 +28,12 @@ public abstract class GameObject {
 	//Renderable representation width and height
 	public abstract float getWidth();
 	public abstract float getHeight();
+	public abstract float getDepth(); 
 	
 	//Renderable representation width and height RESIZE
 	public abstract float getResizeWidth();
 	public abstract float getResizeHeight();
+	public abstract float getResizeDepth(); 
 	
 	public boolean isResetable() { return resetMe; }
 	public boolean isDisposable() { return disposeMe; }

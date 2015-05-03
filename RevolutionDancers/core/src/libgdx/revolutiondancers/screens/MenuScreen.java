@@ -1,12 +1,10 @@
 package libgdx.revolutiondancers.screens;
 
-import libgdx.revolutiondancers.engine.GameObjectPoolable;
-import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.engine.GameObject;
 import libgdx.revolutiondancers.engine.GameObjectDisposable;
+import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.engine.Main;
-import libgdx.revolutiondancers.engine.Physics;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
@@ -17,10 +15,7 @@ import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 public class MenuScreen extends ScreenAbstract {
 
@@ -29,8 +24,8 @@ public class MenuScreen extends ScreenAbstract {
 	//singleton
 	private static MenuScreen menuScreen;
 	
-	private Music backgroundMusic;
-	protected Texture background;
+	private Music backgroundMusic = Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/tittleScreen.wav", Music.class);;
+	protected Texture background = Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/TemporarySplashScreen.png", Texture.class);
 	
 	private BitmapFont title;
 	private BitmapFont pressToPlay;
@@ -44,8 +39,8 @@ public class MenuScreen extends ScreenAbstract {
 		getAssets();
 		
 		//playing music
-		//backgroundMusic.setLooping(true);
-		//backgroundMusic.play();
+		backgroundMusic.setLooping(true);
+		backgroundMusic.play();
 	}
 	
 	public static synchronized MenuScreen getInstance(){
@@ -89,7 +84,7 @@ public class MenuScreen extends ScreenAbstract {
 
 	@Override
 	public void resize(int width, int height) {
-		Main.getInstance().currentViewport.update(width, height);
+		Main.getInstance().current2DViewport.update(width, height);
 	}
 
 	@Override
@@ -236,12 +231,12 @@ public class MenuScreen extends ScreenAbstract {
 		
 		Vector3 coords = Globals.usefulVector3;
 		coords.set(screenX, screenY, 0);
-		coords = Main.getInstance().currentViewport.getCamera().unproject(coords);
+		coords = Main.getInstance().current2DViewport.getCamera().unproject(coords);
 
 		if(coords.x > 0 && coords.x < Globals.WORLD_WIDTH_MIN) 
 		{
 			Main.getInstance().setScreen(GameScreen.getInstance());
-			//backgroundMusic.stop();
+			backgroundMusic.stop();
 			//dispose?
 		}
 		
@@ -280,15 +275,15 @@ public class MenuScreen extends ScreenAbstract {
 	public void update(){
 		
 		//Update Camera
-		Main.getInstance().currentViewport.getCamera().update();
+		Main.getInstance().current2DViewport.getCamera().update();
 		
-		for (GameObject gameObject : objects) {	
+		for (GameObject gameObject : objects2D) {	
 			gameObject.input();
 			gameObject.update();
 			
 			if(gameObject instanceof GameObjectDisposable && ((GameObjectDisposable) gameObject).isDisposable()
 				/*&& !Physics.WORLD.isLocked()*/) {
-				disposeDisposableObject(((GameObjectDisposable) gameObject));	//Para um objeto GameObject nao poolable ser disposable significa que estamos saindo desta tela
+				disposeDisposableObject2D(((GameObjectDisposable) gameObject));	//Para um objeto GameObject nao poolable ser disposable significa que estamos saindo desta tela
 			}
 	
 			if(gameObject.isResetable() /*&& !Physics.WORLD.isLocked()*/ && gameObject instanceof GameObjectDisposable) {  
@@ -298,14 +293,9 @@ public class MenuScreen extends ScreenAbstract {
 			}							//Objetos poolable devem ser resetados/removidos cada um de suas pools, no momento correto, manualmente;
 		}
 		
-		
-		/////WORLD Step////////////////////
-		/***///Physics.simulateWorld();
-		/////WORLD Step////////////////////
-		
-			resetAndDisposeObjects();
+			resetAndDisposeObjects2D();
 
-			addAddLaterObjects();
+			addAddLaterObjects2D();
 		
 		///////////////////////////////////////////////////
 		
@@ -321,13 +311,14 @@ public class MenuScreen extends ScreenAbstract {
 		Gdx.gl.glClearColor(0.13f, 0.61f, 0.124f, 1);
 	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    
-		ScreenAbstract.batch.setProjectionMatrix(Main.getInstance().currentViewport.getCamera().combined);
-		ScreenAbstract.batch.begin();
-		//ScreenAbstract.batch.draw(background, 0, 0);
-	    ScreenAbstract.batch.enableBlending();
-		for (GameObject gameObject : objects) {
+		ScreenAbstract.spriteBatch.setProjectionMatrix(Main.getInstance().current2DViewport.getCamera().combined);
+		ScreenAbstract.spriteBatch.begin();
+		ScreenAbstract.spriteBatch.draw(background, 0, 0);
+	    ScreenAbstract.spriteBatch.enableBlending();
+	    ScreenAbstract.rendering3D = false;
+		for (GameObject gameObject : objects2D) {
 			
-			if(gameObject instanceof GameObjectPoolable && isPoolableObjectToBeRemoved((GameObjectPoolable)gameObject)) continue;
+			if(gameObject instanceof GameObjectPoolable && isPoolableObjectToBeRemoved3D((GameObjectPoolable)gameObject)) continue;
 			
 			if(!gameObject.isResetable() || !gameObject.isDisposable())
 			{
@@ -340,7 +331,7 @@ public class MenuScreen extends ScreenAbstract {
 		//title.draw(ScreenAbstract.batch, "Revolution    Dancers", Globals.WORLD_WIDTH_MIN - 540, Globals.WORLD_HEIGHT_MIN - 245);
 		//pressToPlay.draw(ScreenAbstract.batch, "Press   something   or  Click   or  Touch   to   Play", 225 , 225);
 		
-		ScreenAbstract.batch.end();
+		ScreenAbstract.spriteBatch.end();
 	   
 	}
 	

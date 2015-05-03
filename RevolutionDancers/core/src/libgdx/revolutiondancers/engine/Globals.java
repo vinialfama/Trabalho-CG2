@@ -16,9 +16,6 @@ public abstract class Globals {
 	public static final int WORLD_WIDTH_MIN = 1024;
 	public static final int WORLD_HEIGHT_MIN = 768;
 	
-	public static float currentWorldHeight;
-	public static float currentWorldWidth;
-	
 	//This is used to convert between Bullet units and pixels (Pixels Per Meter / PPM)
 	public static final float PPM = 100;
 

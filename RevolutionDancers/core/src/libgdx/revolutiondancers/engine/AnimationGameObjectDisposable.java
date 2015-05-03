@@ -177,6 +177,21 @@ public class AnimationGameObjectDisposable extends GameObjectDisposable{		//Shou
 		return 0;
 	}
    	
+
+	@Override
+	public float getDepth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public float getResizeDepth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
 	//////////////////////////////////////////
 	@Override
 	public void input() {

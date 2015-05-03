@@ -1,11 +1,14 @@
 package libgdx.revolutiondancers.engine;
 
 import libgdx.revolutiondancers.screens.MenuScreen;
+import libgdx.revolutiondancers.screens.ScreenAbstract;
+
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -14,22 +17,25 @@ public class Main extends Game {
 	
 	private static Main main;
 	
-	private OrthographicCamera worldCamera;
-	public Viewport currentViewport;
-	
-	public boolean renderHD; //Versao OUYA e tela Retina. Ou Tablets Android com alta resolucao.
-	
+	private OrthographicCamera worldCamera2D;
+	public Viewport current2DViewport;  //User Interface, Mini-Map and stuff; Camera and viewport;
+	private PerspectiveCamera worldCamera3D;
+	public Viewport current3DViewport;  //The game itself camera and viewport;	
 	
 	public void create() {
 		
-		//set camera
-		worldCamera = new OrthographicCamera();
-		worldCamera.setToOrtho(false, Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN);
-		currentViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera);
-		worldCamera.update();
-		Globals.currentWorldHeight = currentViewport.getWorldHeight(); 
-		Globals.currentWorldWidth  = currentViewport.getWorldWidth(); 
-
+		//Sets 2D camera
+		worldCamera2D = new OrthographicCamera();
+		worldCamera2D.setToOrtho(false, Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN);
+		current2DViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera2D);
+		worldCamera2D.update(); 
+		//Sets 3D camera
+		worldCamera3D = new PerspectiveCamera(70, 6f, 4f);
+		worldCamera3D.near = 0.01f;
+		worldCamera3D.direction.set(0, 2, -1);
+		current3DViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera2D);
+		worldCamera3D.update();
+		
 		GlobalAssets.loadGlobalAssets();
 		
 		//Physics.initContactListener();
@@ -66,7 +72,6 @@ public class Main extends Game {
 			System.out.println("Running on Android");
 			//in case it is android, test for Ouya
 			if(Ouya.isRunningOnOuya()) {
-				renderHD = true;
 				System.out.println("and on Ouya");
 			}
 			else {

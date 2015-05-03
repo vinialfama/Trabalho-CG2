@@ -2,6 +2,7 @@ package libgdx.revolutiondancers.engine;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 
 /**
@@ -9,11 +10,9 @@ import com.badlogic.gdx.graphics.Texture;
  * */
 public abstract class GlobalAssets {
 
-	/**
-	 * This Class is supposed to have these 2 methods and only these 2 methods.
-	 * It only has the function of loading assets (never unloading them) and keeping the most relevant ones in globally defined variables;
-	 * If it is to have variables containing assets (via assetManager.get) these assets have to be of global relevance;
-	 * **/
+	Mesh cube;
+	Mesh mojoGem;
+	Mesh key;
 	
 	public static enum AssetType{Texture, Sound, Music}; //Etc
 	
@@ -25,13 +24,13 @@ public abstract class GlobalAssets {
 		/*-Textures-*/
 		
 		//Example:
-		//Globals.assetManager.load("Assets/Graphics/background.png", Texture.class);
-			
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/TemporarySplashScreen.png", Texture.class);
+		
 		/*-Textures-*/
-		/*-Sounds-*/
+		/*-Audio-*/
 		
 		//Example:
-		//Globals.assetManager.load("Assets/Audio/Sounds/explosion.wav", Sound.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/tittleScreen.wav", Music.class);
 		
 		
 		Globals.assetManager.finishLoading();

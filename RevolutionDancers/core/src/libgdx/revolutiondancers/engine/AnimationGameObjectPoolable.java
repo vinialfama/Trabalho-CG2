@@ -1,6 +1,7 @@
 package libgdx.revolutiondancers.engine;
 
 import libgdx.revolutiondancers.screens.ScreenAbstract;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -156,6 +157,21 @@ public class AnimationGameObjectPoolable extends GameObjectPoolable{
 		//this.y = 0.0f;
 	}
 
+
+	@Override
+	public float getDepth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public float getResizeDepth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
 	@Override
 	public void input() {
 		// TODO Auto-generated method stub
