@@ -22,14 +22,18 @@ public abstract class GlobalAssets {
 	//To be called when the game is initializing [On the Main Class]:
 	public static void loadGlobalAssets(){
 		/*-Textures-*/
-		
-		//Example:
+		//2D
 		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/TemporarySplashScreen.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/UILayout.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/DanceDanceUILayout.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/DOWN.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/LEFT.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/RIGHT.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/UP.png", Texture.class);
 		
 		/*-Textures-*/
 		/*-Audio-*/
-		
-		//Example:
+		//Music
 		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/tittleScreen.wav", Music.class);
 		
 		

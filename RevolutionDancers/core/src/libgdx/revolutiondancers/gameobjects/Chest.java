@@ -114,4 +114,10 @@ public class Chest extends GameObjectPoolable {
 		
 	}
 
+	@Override
+	public void init(float x, float y, float z) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

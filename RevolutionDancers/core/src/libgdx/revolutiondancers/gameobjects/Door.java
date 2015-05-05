@@ -109,5 +109,11 @@ public class Door extends GameObjectPoolable {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void init(float x, float y, float z) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

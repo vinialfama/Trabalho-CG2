@@ -209,4 +209,11 @@ public class AnimationGameObjectPoolable extends GameObjectPoolable{
 		return 0;
 	}
 
+
+	@Override
+	public void init(float x, float y, float z) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

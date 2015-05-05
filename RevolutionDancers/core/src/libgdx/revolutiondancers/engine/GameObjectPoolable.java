@@ -21,6 +21,7 @@ public abstract class GameObjectPoolable extends GameObject implements Poolable 
 	public abstract void reset();
 	
 	
+	public abstract void init(float x, float y, float z);
 	public abstract void init(float x, float y);
 	
 	public abstract void input();

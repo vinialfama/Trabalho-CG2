@@ -5,19 +5,27 @@ import libgdx.revolutiondancers.engine.DungeonLoader;
 import libgdx.revolutiondancers.engine.GameObject;
 import libgdx.revolutiondancers.engine.GameObjectDisposable;
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.engine.Main;
 import libgdx.revolutiondancers.gameobjects.Door;
 import libgdx.revolutiondancers.gameobjects.Door.DoorState;
 import libgdx.revolutiondancers.gameobjects.Exit;
 import libgdx.revolutiondancers.gameobjects.Key;
 import libgdx.revolutiondancers.gameobjects.MojoGem;
+import libgdx.revolutiondancers.gameobjects.MonsterPack;
 import libgdx.revolutiondancers.gameobjects.Player;
 import libgdx.revolutiondancers.gameobjects.Wall;
+import libgdx.revolutiondancers.pools.MonsterPackPool;
+import libgdx.revolutiondancers.pools.MonsterPool;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ObjectSet;
 
@@ -26,6 +34,16 @@ public class GameScreen extends ScreenAbstract {
 	
 	private static GameScreen gameScreen;
 	protected static InputMultiplexer inputMultiplexer;
+	
+	public final Sprite UILayout =  new Sprite(Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/UILayout.png", Texture.class));
+	private static boolean inBattle = false; //Eh setado para true quando uma batalha esta acontecendo, assim os elementos de UI da batalha aparecem;
+	public final Sprite danceDanceUILayout =  new Sprite(Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/DanceDanceUILayout.png", Texture.class));
+	public static final float danceDanceLayoutUIX = 126;
+	public static final float danceDanceLayoutUIY = Globals.WORLD_HEIGHT_MIN - 192;
+	
+	public static final MonsterPool monsterPool = new MonsterPool();	//Monsters that populate each MonsterPack
+	public static final MonsterPackPool monsterPackPool = new MonsterPackPool();  //Monster Packs that populate the Dungeon
+	public static MonsterPack currentMonsterPackBeingFought;	//What monster pack to display on the screen when a Fight happens!
 	
 	public static final Player player = new Player();
 	public static DungeonLoader dungeonLoader;
@@ -45,6 +63,11 @@ public class GameScreen extends ScreenAbstract {
 		inputMultiplexer.addProcessor(this);
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		//generateMap(currentDungeonNumber +1);  //Getting error; Probably some dumb null pointer thing because of the path;
+		
+		MonsterPack testMonsterPack =  monsterPackPool.obtain();
+		testMonsterPack.init(0, 0, 0);
+		objects2D.add(testMonsterPack);
+		
 	}
 	
 	public static synchronized GameScreen getInstance(){
@@ -151,6 +174,10 @@ public class GameScreen extends ScreenAbstract {
 		//player.setRotation(0.0f);
 		currentDungeonNumber++;
 		generateMap(currentDungeonNumber);
+	}
+	
+	public static boolean isInBattle(){
+		return inBattle;
 	}
 	
 	public static int getCurrentDungeonNumber(){
@@ -346,7 +373,7 @@ public class GameScreen extends ScreenAbstract {
 	
 	
 	public void update(){
-		
+	
 		//Update cameras///////////////////////////////////
 		Main.getInstance().current2DViewport.getCamera().update();
 		Main.getInstance().current3DViewport.getCamera().update();
@@ -408,7 +435,7 @@ public class GameScreen extends ScreenAbstract {
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(float delta) {			inBattle = true;  //Testes
 		
 		input();
 		update();
@@ -422,6 +449,8 @@ public class GameScreen extends ScreenAbstract {
 		ScreenAbstract.spriteBatch.setProjectionMatrix(Main.getInstance().current2DViewport.getCamera().combined);
 		ScreenAbstract.spriteBatch.begin();
 	    ScreenAbstract.spriteBatch.enableBlending();
+	    ScreenAbstract.spriteBatch.draw(UILayout.getTexture(), 0, 0, Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN);
+	    if(inBattle) ScreenAbstract.spriteBatch.draw(danceDanceUILayout.getTexture(), danceDanceLayoutUIX, danceDanceLayoutUIY, Globals.WORLD_WIDTH_MIN/2.02f, Globals.WORLD_HEIGHT_MIN/8);
 	    ScreenAbstract.rendering3D = false;
 		for (GameObject gameObject : objects2D) {
 			
