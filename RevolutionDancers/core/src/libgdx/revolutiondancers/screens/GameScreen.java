@@ -8,10 +8,12 @@ import libgdx.revolutiondancers.engine.GameObjectPoolable;
 import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.engine.Main;
 import libgdx.revolutiondancers.gameobjects.Door;
+import libgdx.revolutiondancers.gameobjects.ArrowUI.ArrowDirection;
 import libgdx.revolutiondancers.gameobjects.Door.DoorState;
 import libgdx.revolutiondancers.gameobjects.Exit;
 import libgdx.revolutiondancers.gameobjects.Key;
 import libgdx.revolutiondancers.gameobjects.MojoGem;
+import libgdx.revolutiondancers.gameobjects.Monster;
 import libgdx.revolutiondancers.gameobjects.MonsterPack;
 import libgdx.revolutiondancers.gameobjects.Player;
 import libgdx.revolutiondancers.gameobjects.Wall;
@@ -33,7 +35,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 public class GameScreen extends ScreenAbstract {
 	
 	private static GameScreen gameScreen;
-	protected static InputMultiplexer inputMultiplexer;
+	protected static InputMultiplexer inputMultiplexer = new InputMultiplexer();
 	
 	public final Sprite UILayout =  new Sprite(Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/UILayout.png", Texture.class));
 	private static boolean inBattle = false; //Eh setado para true quando uma batalha esta acontecendo, assim os elementos de UI da batalha aparecem;
@@ -44,6 +46,7 @@ public class GameScreen extends ScreenAbstract {
 	public static final MonsterPool monsterPool = new MonsterPool();	//Monsters that populate each MonsterPack
 	public static final MonsterPackPool monsterPackPool = new MonsterPackPool();  //Monster Packs that populate the Dungeon
 	public static MonsterPack currentMonsterPackBeingFought;	//What monster pack to display on the screen when a Fight happens!
+	public static Monster leftMonster, rightMonster, upMonster, downMonster; //Whatever the current Monsters in a battle are; Update these whenever a battle starts;
 	
 	public static final Player player = new Player();
 	public static DungeonLoader dungeonLoader;
@@ -58,14 +61,14 @@ public class GameScreen extends ScreenAbstract {
 	private static int inventoryKeys = 0;
 	private static int inventorySpecialKeys = 0;
 	
-	public GameScreen() {
-		inputMultiplexer = new InputMultiplexer();
-		inputMultiplexer.addProcessor(this);
+	public GameScreen() {											inBattle = true;  //Testes
+		inputMultiplexer.addProcessor(this);				
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		//generateMap(currentDungeonNumber +1);  //Getting error; Probably some dumb null pointer thing because of the path;
 		
 		MonsterPack testMonsterPack =  monsterPackPool.obtain();
 		testMonsterPack.init(0, 0, 0);
+		currentMonsterPackBeingFought = testMonsterPack;		updateCurrentMonsters();
 		objects2D.add(testMonsterPack);
 		
 	}
@@ -80,6 +83,20 @@ public class GameScreen extends ScreenAbstract {
 	/////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////
 	
+	public void updateCurrentMonsters(){
+		leftMonster = findMonster(ArrowDirection.LEFT);
+		rightMonster = findMonster(ArrowDirection.RIGHT); 
+		upMonster = findMonster(ArrowDirection.UP); 
+		downMonster = findMonster(ArrowDirection.DOWN);
+	}
+	
+	//Gambiarra!
+	private Monster findMonster(ArrowDirection direction) {
+		for (Monster monster : GameScreen.currentMonsterPackBeingFought.monsterPack) {
+			if(monster.monsterArrowDirection.equals(direction)) return monster;
+		}
+		return null;
+	}
 	
 	private void generateMap(int dungeonNumber) {
 		inventoryMojoGems = 0;
@@ -435,7 +452,7 @@ public class GameScreen extends ScreenAbstract {
 	}
 
 	@Override
-	public void render(float delta) {			inBattle = true;  //Testes
+	public void render(float delta) {			
 		
 		input();
 		update();

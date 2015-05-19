@@ -24,6 +24,8 @@ public abstract class Globals {
 	public static Vector3 usefulVector3 = new Vector3(); 
 	public static Vector2 usefulVector2Number1 = new Vector2();
 	public static Vector2 usefulVector2Number2 = new Vector2();
+	public static float usefulFloat = 0;
+	
 	
 	//An smart use of these three randomGenerators will give us a pretty good random behavior
 	public static final RandomGenerator randomGenerator = new RandomGenerator(); //A 64 bit WELL512 implementation; This algorithm is also known as the modern version of the Mersenne Twister;
@@ -61,7 +63,7 @@ public abstract class Globals {
 			randomGenerator2.setSeed(currentRandomGenerator.nextLong());	
 			break;
 			}
-			renewSeedDelay.setLength((int)Math.abs(300000 + randomGenerator.nextInt(132000) - randomGenerator2.nextInt(32200 / randomGenerator3.nextInt(32000))));
+			renewSeedDelay.setLength((int)Math.abs(300000 + randomGenerator.nextInt(132000) - randomGenerator2.nextInt(32200 /1 + randomGenerator3.nextInt(32000))));
 			renewSeedDelay.start();
 		}
 		if(!changeRandomGeneratorDelay.hasStarted()) changeRandomGeneratorDelay.start();
@@ -84,7 +86,7 @@ public abstract class Globals {
 			break;
 			}
 			whichRandomGeneratorTurnIsIt++;	//Regular behavior
-			changeRandomGeneratorDelay.setLength((int)Math.abs(32200 + randomGenerator.nextInt(32200) - randomGenerator2.nextInt(3200 / randomGenerator3.nextInt(3200))));
+			changeRandomGeneratorDelay.setLength((int)Math.abs(32200 + randomGenerator.nextInt(32200) - randomGenerator2.nextInt(3200 / 1 + randomGenerator3.nextInt(3200))));
 			changeRandomGeneratorDelay.start();
 		}
 		

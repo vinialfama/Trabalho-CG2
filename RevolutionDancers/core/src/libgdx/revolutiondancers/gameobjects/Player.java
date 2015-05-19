@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import libgdx.revolutiondancers.engine.GameObjectDisposable;
+import libgdx.revolutiondancers.gameobjects.ArrowUI.ArrowDirection;
+import libgdx.revolutiondancers.screens.GameScreen;
 
 public class Player extends GameObjectDisposable implements ControllerListener, InputProcessor {
 
@@ -16,18 +18,16 @@ public class Player extends GameObjectDisposable implements ControllerListener, 
 	private Vector2 centrePos = new Vector2(0.0f, 0.0f);
 	
 	public Player(){
-		
+		GameScreen.getInputMultiplexer().addProcessor(this);		
 	}
 	
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
+		GameScreen.getInputMultiplexer().removeProcessor(this);
 	}
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -98,33 +98,41 @@ public class Player extends GameObjectDisposable implements ControllerListener, 
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public boolean keyDown(int keycode) {
-
-
-		if(keycode == Keys.W) {		
-			//move(0, 0 , -1);
-		}
 		
-		if(keycode == Keys.S) {	
-			//move(0, 0 , 1);		
-		}
+		if(!GameScreen.isInBattle()) 
+		{
+			if(keycode == Keys.W) {		
+				//move(0, 0 , -1);
+				return false;
+			}
 		
-		if(keycode == Keys.A) {	
-			//move(-1,0, 0);
-		}
+			if(keycode == Keys.S) {	
+				//move(0, 0 , 1);		
+				return false;
+			}
 		
-		if(keycode == Keys.D) {	
-			//move(1,0, 0);
-		}
+			if(keycode == Keys.A) {	
+				//move(-1,0, 0);
+				return false;
+			}
 		
+			if(keycode == Keys.D) {	
+				//move(1,0, 0);
+				return false;
+			}
+			
+		}
 		return false;
 	}
 
+	
+
+	
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

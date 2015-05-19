@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Class where we'll keep globally loaded assets;
@@ -15,6 +16,10 @@ public abstract class GlobalAssets {
 	Mesh key;
 	
 	public static enum AssetType{Texture, Sound, Music}; //Etc
+	
+	public static Array<Music> dungeonMusicArray = new Array<Music>();
+	public static Array<Music> battleMusicArray = new Array<Music>();
+	private Music auxMusic;
 	
 	/*
 	 * Examples:
@@ -36,6 +41,7 @@ public abstract class GlobalAssets {
 		//Music
 		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/tittleScreen.wav", Music.class);
 		
+		//auxMusic = new (get musica1 bla bla bla)
 		
 		Globals.assetManager.finishLoading();
 	}

@@ -32,22 +32,23 @@ public class ArrowUI extends GameObjectPoolable {
 	//Use this one instead:
 	public void init(ArrowDirection arrowDirection) {
 		myArrowDirection = arrowDirection;
+		x = 8;
 		switch(myArrowDirection){
 		case DOWN:
 			myArrowSprite = arrowSpriteUIDown;
-			x = 2 * GameScreen.danceDanceLayoutUIX;
+			x += 2 * GameScreen.danceDanceLayoutUIX;
 			break;
 		case LEFT:
 			myArrowSprite = arrowSpriteUILeft;
-			x = 1 * GameScreen.danceDanceLayoutUIX;
+			x += 1 * GameScreen.danceDanceLayoutUIX;
 			break;
 		case RIGHT:
 			myArrowSprite = arrowSpriteUIRight;
-			x = 4 * GameScreen.danceDanceLayoutUIX;
+			x += 4 * GameScreen.danceDanceLayoutUIX;
 			break;
 		case UP:
 			myArrowSprite = arrowSpriteUIUp;
-			x = 3 * GameScreen.danceDanceLayoutUIX;
+			x += 3 * GameScreen.danceDanceLayoutUIX;
 			break;
 		}
 		
@@ -98,8 +99,8 @@ public class ArrowUI extends GameObjectPoolable {
 	
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		passedTheScreenEnd = false;
+		y = 0;			//System.out.println("Resetted arrow here!");
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -112,8 +113,13 @@ public class ArrowUI extends GameObjectPoolable {
 
 	@Override
 	public void update() {
-		y += 0.5f + (0.5/ 1 + Globals.getRandomGenerator().nextInt(15));  //O Random eh pra dar uma emocao a mais; //The player will try to make sense of it of course, but it really has none;
-		if(y >= Globals.WORLD_HEIGHT_MIN) passedTheScreenEnd = true;
+		y += 2.45f;  //O Random eh pra dar uma emocao a mais; //The player will try to make sense of it of course, but it really has none;
+		if(y >= Globals.WORLD_HEIGHT_MIN) {
+			passedTheScreenEnd = true;			
+			//Monster.arrowUIPool.free(this);
+			//Falta uma logica pra que eu saia do array do monstro....
+			
+		}
 	}
 
 	@Override
