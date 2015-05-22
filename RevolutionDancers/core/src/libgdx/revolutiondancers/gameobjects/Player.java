@@ -1,29 +1,39 @@
 package libgdx.revolutiondancers.gameobjects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import libgdx.revolutiondancers.engine.GameObjectDisposable;
+import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.engine.Main;
 import libgdx.revolutiondancers.gameobjects.ArrowUI.ArrowDirection;
 import libgdx.revolutiondancers.screens.GameScreen;
 
-public class Player extends GameObjectDisposable implements ControllerListener, InputProcessor {
+public class Player extends GameObjectDisposable /*implements ControllerListener, InputProcessor*/ {
 
 	
-	private Vector2 centrePos = new Vector2(0.0f, 0.0f);
+	private Vector2 centrePosition = new Vector2(0.0f, 0.0f);
+	public static PerspectiveCamera firstPersonCamera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	public static Viewport firstPersonCameraViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, firstPersonCamera);
+	public static FirstPersonCameraController firstPersonCameraController = new FirstPersonCameraController(firstPersonCameraViewport.getCamera());
 	
 	public Player(){
-		GameScreen.getInputMultiplexer().addProcessor(this);		
+		firstPersonCameraController.setVelocity(35f);
 	}
 	
 	@Override
 	public void dispose() {
-		GameScreen.getInputMultiplexer().removeProcessor(this);
+		
 	}
 
 	@Override
@@ -74,32 +84,12 @@ public class Player extends GameObjectDisposable implements ControllerListener, 
 	}
 	
 
-	public Vector2 getCentrePos() {
+	public Vector2 getCentrePosition() {
 		// TODO Auto-generated method stub
-		return centrePos;
+		return centrePosition;
 	}
 	
-	//=========================================================
-
-	@Override
-	public void input() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void draw() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
+/*	@Override
 	public boolean keyDown(int keycode) {
 		
 		if(!GameScreen.isInBattle()) 
@@ -126,12 +116,12 @@ public class Player extends GameObjectDisposable implements ControllerListener, 
 			
 		}
 		return false;
-	}
+	}*/
 
 	
 
 	
-	@Override
+	/*@Override
 	public boolean keyUp(int keycode) {
 		return false;
 	}
@@ -228,6 +218,29 @@ public class Player extends GameObjectDisposable implements ControllerListener, 
 			int accelerometerCode, Vector3 value) {
 		// TODO Auto-generated method stub
 		return false;
+	}*/
+	
+	
+	
+	//=========================================================
+
+	@Override
+	public void input() {
+		
+	}
+
+	@Override
+	public void update() {
+		//Salvar antes a posicao antiga da camera
+		firstPersonCameraController.update();
+		//Se a posicao nova ultrapassa o cenario
+		 //Entao setar a camera pra posicao velha
+	}
+
+	@Override
+	public void draw() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -11,6 +11,7 @@ import libgdx.revolutiondancers.gameobjects.Door;
 import libgdx.revolutiondancers.gameobjects.ArrowUI.ArrowDirection;
 import libgdx.revolutiondancers.gameobjects.Door.DoorState;
 import libgdx.revolutiondancers.gameobjects.Exit;
+import libgdx.revolutiondancers.gameobjects.FloorAndCeiling;
 import libgdx.revolutiondancers.gameobjects.Key;
 import libgdx.revolutiondancers.gameobjects.MojoGem;
 import libgdx.revolutiondancers.gameobjects.Monster;
@@ -19,12 +20,12 @@ import libgdx.revolutiondancers.gameobjects.Player;
 import libgdx.revolutiondancers.gameobjects.Wall;
 import libgdx.revolutiondancers.pools.MonsterPackPool;
 import libgdx.revolutiondancers.pools.MonsterPool;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
@@ -60,17 +61,33 @@ public class GameScreen extends ScreenAbstract {
 	private static int inventoryMojoGems = 0;
 	private static int inventoryKeys = 0;
 	private static int inventorySpecialKeys = 0;
+		
 	
-	public GameScreen() {											inBattle = true;  //Testes
+	public GameScreen() {											//inBattle = true;  //Testes
 		inputMultiplexer.addProcessor(this);				
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		//generateMap(currentDungeonNumber +1);  //Getting error; Probably some dumb null pointer thing because of the path;
 		
-		MonsterPack testMonsterPack =  monsterPackPool.obtain();
+		/*MonsterPack testMonsterPack =  monsterPackPool.obtain();
 		testMonsterPack.init(0, 0, 0);
 		currentMonsterPackBeingFought = testMonsterPack;		updateCurrentMonsters();
-		objects2D.add(testMonsterPack);
+		objects2D.add(testMonsterPack);*/
 		
+		Wall testWall = new Wall(0, 0);   //Y [The height of stuff] is constant during map creation; Only x and Z vary;
+		objects3D.add(testWall);
+
+		FloorAndCeiling flacTest  = new FloorAndCeiling(testWall.x + Wall.width, testWall.z + Wall.depth);
+		FloorAndCeiling flacTest2 = new FloorAndCeiling(testWall.x - Wall.width, testWall.z - Wall.depth);
+		FloorAndCeiling flacTest3 = new FloorAndCeiling(testWall.x - Wall.width, testWall.z + Wall.depth);
+		FloorAndCeiling flacTest4 = new FloorAndCeiling(testWall.x + Wall.width, testWall.z - Wall.depth);
+		objects3D.add(flacTest);
+		objects3D.add(flacTest2);
+		objects3D.add(flacTest3);
+		objects3D.add(flacTest4);
+		
+		
+		objects3D.add(player);
+		inputMultiplexer.addProcessor(Player.firstPersonCameraController);
 	}
 	
 	public static synchronized GameScreen getInstance(){
@@ -98,7 +115,7 @@ public class GameScreen extends ScreenAbstract {
 		return null;
 	}
 	
-	private void generateMap(int dungeonNumber) {
+	/*private void generateMap(int dungeonNumber) {
 		inventoryMojoGems = 0;
 		inventoryKeys = 0;
 		inventorySpecialKeys = 0;
@@ -120,7 +137,7 @@ public class GameScreen extends ScreenAbstract {
 				}
 				if (dungeonLoader.getTile(x, y).equals("W")) {
 					// Generate walls
-					walls.add(new Wall(x, dungeonLoader.getMap().size-y, 1f, 1f));
+					walls.add(new Wall(x, dungeonLoader.getMap().size-y, 5f, 5f, 5f));
 				}
 				if (dungeonLoader.getTile(x, y).equals("E")) {
 					// Create exit
@@ -155,7 +172,7 @@ public class GameScreen extends ScreenAbstract {
 					}
 					if (dungeonGenerator.getTile(x, y).equals("W")) {
 						// Generate walls
-						walls.add(new Wall(x, dungeonGenerator.getMap().size-y, 1f, 1f));
+						walls.add(new Wall(x, dungeonGenerator.getMap().size-y, 5f, 5f, 5f));
 					}
 					if (dungeonGenerator.getTile(x, y).equals("E")) {
 						// Create exit
@@ -180,9 +197,9 @@ public class GameScreen extends ScreenAbstract {
 				}
 			   }
 		}
-	}
+	}*/
 	
-	private void restartMap() {
+/*	private void restartMap() {
 		//player.setRotation(0.0f);
 		generateMap(currentDungeonNumber);
 	}
@@ -192,7 +209,7 @@ public class GameScreen extends ScreenAbstract {
 		currentDungeonNumber++;
 		generateMap(currentDungeonNumber);
 	}
-	
+	*/
 	public static boolean isInBattle(){
 		return inBattle;
 	}
@@ -309,7 +326,9 @@ public class GameScreen extends ScreenAbstract {
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
+
+		Player.firstPersonCameraController.touchDragged(screenX, screenY, 0);
+		
 		return false;
 	}
 
@@ -459,31 +478,11 @@ public class GameScreen extends ScreenAbstract {
 		
 		//clear screen
 		Gdx.gl.glClearColor(0.83f, 0.61f, 0.124f, 1);
-	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-	    
-	    /////////////////////2D////////////////////////
-	    /////////////////////2D////////////////////////
-		ScreenAbstract.spriteBatch.setProjectionMatrix(Main.getInstance().current2DViewport.getCamera().combined);
-		ScreenAbstract.spriteBatch.begin();
-	    ScreenAbstract.spriteBatch.enableBlending();
-	    ScreenAbstract.spriteBatch.draw(UILayout.getTexture(), 0, 0, Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN);
-	    if(inBattle) ScreenAbstract.spriteBatch.draw(danceDanceUILayout.getTexture(), danceDanceLayoutUIX, danceDanceLayoutUIY, Globals.WORLD_WIDTH_MIN/2.02f, Globals.WORLD_HEIGHT_MIN/8);
-	    ScreenAbstract.rendering3D = false;
-		for (GameObject gameObject : objects2D) {
-			
-			if(gameObject instanceof GameObjectPoolable && isPoolableObjectToBeRemoved3D((GameObjectPoolable)gameObject)) continue;
-			
-			if(!gameObject.isResetable() || !gameObject.isDisposable())
-			{
-				gameObject.draw();			
-			}
-
-		}
-		ScreenAbstract.spriteBatch.end();		
-		/////////////////////2D////////////////////////
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		/////////////////////3D////////////////////////
-		//ScreenAbstract.modelBatch.setCamera(Main.getInstance().current3DViewport.getCamera());  //Tenho que aprender como isso funciona em 3D
-		ScreenAbstract.modelBatch.begin(modelBatch.getCamera());
+		//The camera to be used on the current frame; Well have multiple cameras; So use this to select which one is the current one; 
+		ScreenAbstract.modelBatch.begin(Main.getInstance().current3DViewport.getCamera());     //Which perspective camera is the current perspective camera; Adjusted to its viewport;
+		//For example, the player firstPersonCamera or the worldCamera3D;
 		ScreenAbstract.rendering3D = true;
 		for (GameObject gameObject : objects3D) {
 			
@@ -499,6 +498,30 @@ public class GameScreen extends ScreenAbstract {
 		
 		/////////////////////3D////////////////////////
 		/////////////////////3D////////////////////////
+	    
+	    /////////////////////2D////////////////////////
+	    /////////////////////2D////////////////////////
+		ScreenAbstract.spriteBatch.setProjectionMatrix(Main.getInstance().current2DViewport.getCamera().combined);
+		ScreenAbstract.spriteBatch.begin();
+	    ScreenAbstract.spriteBatch.enableBlending();
+
+	    //Corrigir!: //ScreenAbstract.spriteBatch.draw(UILayout.getTexture(), 0, 0, Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN);
+	    
+	    if(inBattle) ScreenAbstract.spriteBatch.draw(danceDanceUILayout.getTexture(), danceDanceLayoutUIX, danceDanceLayoutUIY, Globals.WORLD_WIDTH_MIN/2.02f, Globals.WORLD_HEIGHT_MIN/8);
+	    ScreenAbstract.rendering3D = false;
+		for (GameObject gameObject : objects2D) {
+			
+			if(gameObject instanceof GameObjectPoolable && isPoolableObjectToBeRemoved3D((GameObjectPoolable)gameObject)) continue;
+			
+			if(!gameObject.isResetable() || !gameObject.isDisposable())
+			{
+				gameObject.draw();			
+			}
+
+		}
+		ScreenAbstract.spriteBatch.end();		
+		/////////////////////2D////////////////////////
+		
 	}
 	
 	///////////////

@@ -7,6 +7,8 @@ package libgdx.revolutiondancers.engine;
  */
 public abstract class GameObject {
 	
+	public float x, y , z;  //Z is only for 3D gameObjects
+	
 	//Used to check if the game object has to be reset or disposed
 	protected boolean resetMe = false;
 	protected boolean disposeMe = false;

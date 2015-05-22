@@ -3,11 +3,16 @@ package libgdx.revolutiondancers.engine;
 import java.util.Random;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public abstract class Globals {
+	
+	public static final ModelBuilder modelBuilder = new ModelBuilder();
+	public static final Environment environment = new Environment();
 	
 	public static final AssetManager assetManager = new AssetManager();
 	

@@ -1,5 +1,6 @@
 package libgdx.revolutiondancers.engine;
 
+import libgdx.revolutiondancers.gameobjects.Player;
 import libgdx.revolutiondancers.screens.MenuScreen;
 import libgdx.revolutiondancers.screens.ScreenAbstract;
 
@@ -9,6 +10,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -20,7 +23,9 @@ public class Main extends Game {
 	private OrthographicCamera worldCamera2D;
 	public Viewport current2DViewport;  //User Interface, Mini-Map and stuff; Camera and viewport;
 	private PerspectiveCamera worldCamera3D;
+	private Viewport worldCamera3DViewport;
 	public Viewport current3DViewport;  //The game itself camera and viewport;	
+	//Remember that the player [is |also has] a Camera  [But uses the same viewport];
 	
 	public void create() {
 		
@@ -30,13 +35,24 @@ public class Main extends Game {
 		current2DViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera2D);
 		worldCamera2D.update(); 
 		//Sets 3D camera
-		worldCamera3D = new PerspectiveCamera(70, 6f, 4f);
-		worldCamera3D.near = 0.01f;
-		worldCamera3D.direction.set(0, 2, -1);
-		current3DViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera2D);
+		worldCamera3D = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		worldCamera3D.near = 1f;
+		worldCamera3D.far = 300f;			//World3D Camera is the camera that "films" the sweet 3D vs 2D Dungeon Crawler Battle Action!
 		worldCamera3D.update();
+		worldCamera3DViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera3D);
+		
+		Player.firstPersonCamera.position.set(50f, 1f, 50f); //Colocar a position de acordo com a posicao de inicio da jogadora no mapa!
+		Player.firstPersonCamera.near = 1f;
+		Player.firstPersonCamera.far = 300f;
+		Player.firstPersonCamera.update();
+		current3DViewport = Player.firstPersonCameraViewport; //The first Camera (the one the Game starts in) is the Player first person point of view camera;		
+		
 		
 		GlobalAssets.loadGlobalAssets();
+		
+		Globals.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+		Globals.environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+		
 		
 		//Physics.initContactListener();
 		

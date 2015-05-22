@@ -21,10 +21,19 @@ public abstract class GlobalAssets {
 	public static Array<Music> battleMusicArray = new Array<Music>();
 	private Music auxMusic;
 	
-	/*
-	 * Examples:
-	 */
-	//To be called when the game is initializing [On the Main Class]:
+	public static Array<Texture> dungeonFloorTextureArray = new Array<Texture>();
+	public static Array<Texture> battleCeilingTextureArray = new Array<Texture>();
+	private Texture auxFloorTexture, auxCeilingTexture;
+	
+	public static Array<Texture> dungeonWallTextureArrayGlobalDecorations = new Array<Texture>();
+	public static Array<Texture> dungeonWallTextureArray1 = new Array<Texture>(); public static Array<Texture> dungeonWallTextureArray1Decorations = new Array<Texture>();
+	public static Array<Texture> dungeonWallTextureArray2 = new Array<Texture>(); public static Array<Texture> dungeonWallTextureArray2Decorations = new Array<Texture>();
+	public static Array<Texture> dungeonWallTextureArray3 = new Array<Texture>(); public static Array<Texture> dungeonWallTextureArray3Decorations = new Array<Texture>();
+	public static Array<Texture> dungeonWallTextureArray4 = new Array<Texture>(); public static Array<Texture> dungeonWallTextureArray4Decorations = new Array<Texture>();
+	public static Array<Texture> dungeonWallTextureArray5 = new Array<Texture>(); public static Array<Texture> dungeonWallTextureArray5Decorations = new Array<Texture>();
+	private Texture auxWallTexture;
+
+	
 	public static void loadGlobalAssets(){
 		/*-Textures-*/
 		//2D
@@ -35,6 +44,13 @@ public abstract class GlobalAssets {
 		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/LEFT.png", Texture.class);
 		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/RIGHT.png", Texture.class);
 		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/UP.png", Texture.class);
+		
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/Walls/Decorations/dopechurch.jpg", Texture.class); //Cuidado: .jpg!!
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/Walls/Decorations/11.png", Texture.class);
+		
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/Floor/4.png", Texture.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Graphics/2D/Ceiling/4.png", Texture.class);
+		
 		
 		/*-Textures-*/
 		/*-Audio-*/
