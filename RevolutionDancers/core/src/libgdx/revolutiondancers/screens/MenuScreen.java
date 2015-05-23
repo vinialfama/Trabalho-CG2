@@ -39,7 +39,7 @@ public class MenuScreen extends ScreenAbstract {
 		getAssets();
 		
 		//playing music
-		backgroundMusic.setLooping(true);
+		backgroundMusic.setLooping(true);			
 		backgroundMusic.play();
 	}
 	

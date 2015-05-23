@@ -37,13 +37,13 @@ public class Main extends Game {
 		//Sets 3D camera
 		worldCamera3D = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		worldCamera3D.near = 1f;
-		worldCamera3D.far = 300f;			//World3D Camera is the camera that "films" the sweet 3D vs 2D Dungeon Crawler Battle Action!
+		worldCamera3D.far = 800f;			//World3D Camera is the camera that "films" the sweet 3D vs 2D Dungeon Crawler Battle Action!
 		worldCamera3D.update();
 		worldCamera3DViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, worldCamera3D);
 		
 		Player.firstPersonCamera.position.set(50f, 1f, 50f); //Colocar a position de acordo com a posicao de inicio da jogadora no mapa!
 		Player.firstPersonCamera.near = 1f;
-		Player.firstPersonCamera.far = 300f;
+		Player.firstPersonCamera.far = 800f;
 		Player.firstPersonCamera.update();
 		current3DViewport = Player.firstPersonCameraViewport; //The first Camera (the one the Game starts in) is the Player first person point of view camera;		
 		

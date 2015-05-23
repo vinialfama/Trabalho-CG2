@@ -22,7 +22,9 @@ import libgdx.revolutiondancers.screens.GameScreen;
 public class Player extends GameObjectDisposable /*implements ControllerListener, InputProcessor*/ {
 
 	
-	private Vector2 centrePosition = new Vector2(0.0f, 0.0f);
+	//private Vector2 centrePosition = new Vector2(0.0f, 0.0f);
+	
+	public static final float y = 1f;
 	public static PerspectiveCamera firstPersonCamera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	public static Viewport firstPersonCameraViewport = new ExtendViewport(Globals.WORLD_WIDTH_MIN, Globals.WORLD_HEIGHT_MIN, Globals.WORLD_WIDTH_MAX, Globals.WORLD_HEIGHT_MAX, firstPersonCamera);
 	public static FirstPersonCameraController firstPersonCameraController = new FirstPersonCameraController(firstPersonCameraViewport.getCamera());
@@ -84,10 +86,10 @@ public class Player extends GameObjectDisposable /*implements ControllerListener
 	}
 	
 
-	public Vector2 getCentrePosition() {
+/*	public Vector2 getCentrePosition() {
 		// TODO Auto-generated method stub
 		return centrePosition;
-	}
+	}*/
 	
 /*	@Override
 	public boolean keyDown(int keycode) {

@@ -2,6 +2,7 @@ package libgdx.revolutiondancers.gameobjects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.Rectangle;
 
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.GlobalAssets;
 import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.screens.GameScreen;
 import libgdx.revolutiondancers.screens.ScreenAbstract;
@@ -34,19 +36,21 @@ public class Wall extends GameObjectPoolable {
 	public Model model;
 	public ModelInstance modelInstance;
 	
-	public TextureRegion texture = new TextureRegion(Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Walls/Decorations/dopechurch.jpg", Texture.class));
+	public Texture texture;
 	
-	public Wall(float x, float z) {
+	public Wall(float x, float z, int myGroup) {
 		this.x = x ;
 		this.z = z ;
 		bounds = new Rectangle(x, y, width, height);
 	
+		texture = GlobalAssets.getWallTexture(myGroup);		texture.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
+		
 		model = Globals.modelBuilder.createBox(width, height, depth, new Material(new TextureAttribute(TextureAttribute.Diffuse, texture)), Usage.Position | Usage.TextureCoordinates);
 		modelInstance = new ModelInstance(model);
 		modelInstance.transform.setTranslation(x, y, z);
+		modelInstance.transform.rotate(0, 0, 1, 90);
 		
-		
-		FloorAndCeiling floorAndCeiling = new FloorAndCeiling(x, z);
+		FloorAndCeiling floorAndCeiling = new FloorAndCeiling(x, z, myGroup);
 		ScreenAbstract.addLaterPoolableObject3D(floorAndCeiling);
 	}
 	
@@ -119,7 +123,7 @@ public class Wall extends GameObjectPoolable {
 	}
 
 	@Override
-	public void draw() {
+	public void draw() {			//System.out.println(Globals.getRandomGenerator().nextInt(2));  //Printava de 0 ate 2  [com o 0 e com o 2] [soh que com valores as vezes negativos (nao abs)]
 		//Wall doesnt have a 2D representation; So it can only render in the rendering3D phase;
 		if(ScreenAbstract.rendering3D) {
 			ScreenAbstract.modelBatch.render(modelInstance, Globals.environment);			

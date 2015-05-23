@@ -4,6 +4,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
@@ -24,6 +26,7 @@ public class ArrowUI extends GameObjectPoolable {
 	public enum ArrowDirection{UP,DOWN,LEFT,RIGHT};
 	public ArrowDirection myArrowDirection; 
 	public boolean passedTheScreenEnd;
+	public boolean isDoubleArrow;
 	
 	@Override  //Do not use for this class:
 	public void init(float x, float y, float z) {}
@@ -51,7 +54,12 @@ public class ArrowUI extends GameObjectPoolable {
 			x += 3 * GameScreen.danceDanceLayoutUIX;
 			break;
 		}
-		
+			y -= Math.abs(0.1 + Globals.getRandomGenerator().nextFloat());
+	}
+	
+	public void initDoubleArrow(ArrowDirection arrowDirection) {
+		init(arrowDirection);
+		isDoubleArrow = true;
 	}
 
 
@@ -99,6 +107,7 @@ public class ArrowUI extends GameObjectPoolable {
 	
 	@Override
 	public void reset() {
+		isDoubleArrow = false;
 		passedTheScreenEnd = false;
 		y = 0;			//System.out.println("Resetted arrow here!");
 	}
@@ -113,19 +122,25 @@ public class ArrowUI extends GameObjectPoolable {
 
 	@Override
 	public void update() {
-		y += 2.45f;  //O Random eh pra dar uma emocao a mais; //The player will try to make sense of it of course, but it really has none;
+		y += 2.45f;  
+		
+		//y += GameScreen.battleMusic.getVolume();   //Fix!!
+		
 		if(y >= Globals.WORLD_HEIGHT_MIN) {
 			passedTheScreenEnd = true;			
-			//Monster.arrowUIPool.free(this);
-			//Falta uma logica pra que eu saia do array do monstro....
-			
 		}
 	}
 
 	@Override
 	public void draw() {
-		//ScreenAbstract.spriteBatch.draw(myArrowSprite.getTexture(), x, y, Globals.WORLD_WIDTH_MIN/3, Globals.WORLD_HEIGHT_MIN/8);
-		ScreenAbstract.spriteBatch.draw(myArrowSprite.getTexture(), x, y);
+		{ //System.out.println("Promises");
+			 ScreenAbstract.spriteBatch.draw(myArrowSprite.getTexture(), x, y);
+			ScreenAbstract.spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_CONSTANT_COLOR);  //GL_ONE
+			ScreenAbstract.spriteBatch.setColor(Math.abs(Globals.getRandomGenerator().nextFloat()));
+			 ScreenAbstract.spriteBatch.draw(myArrowSprite.getTexture(), x, y);
+			ScreenAbstract.spriteBatch.setColor(Color.WHITE);
+			ScreenAbstract.spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		}
 	}
 	
 

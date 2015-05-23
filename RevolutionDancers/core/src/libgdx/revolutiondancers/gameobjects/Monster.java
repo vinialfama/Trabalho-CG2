@@ -24,7 +24,7 @@ public class Monster extends GameObjectPoolable {
 	public static final Queue<ArrowUI> rightArrows = new Queue<ArrowUI>();
 	public static final Queue<ArrowUI> downArrows = new Queue<ArrowUI>();
 	public static final Queue<ArrowUI> upArrows = new Queue<ArrowUI>();
-	public final Delay appendAnotherArrowDelay = new Delay(Globals.getRandomGenerator().nextInt(10000));
+	public final Delay appendAnotherArrowDelay = new Delay(Math.abs(Globals.getRandomGenerator().nextInt(10000)));
 	public ArrowDirection monsterArrowDirection;  //Each enemy in a battle is responsible for a specific queue; Each representing an arrow;
 	public float lifeAmount = 100f;
 	
@@ -139,7 +139,10 @@ public class Monster extends GameObjectPoolable {
 		}
 		
 		//Decreases life
-		lifeAmount -= (1.3 + Globals.getRandomGenerator().nextInt(2))/2; //Can lose almost no life or a lot of life; Totally luck based;
+		lifeAmount -= (1.3 + Math.abs(Globals.getRandomGenerator().nextInt(2)))/2; //Can lose almost no life or a lot of life; Totally luck based;
+		
+		//lifeAmount -= (/*GameScreen.battleMusic.getVolume() + [Fix!!] */ (0.001 + GameScreen.battleMusic.getPosition()/360))/2;	//Monsters lose more life as the Song progresses and when the Volume is louder 
+		
 		//Executes taking damage animation
 		System.out.println("Ouch!  Monster Life = "+ lifeAmount);
 		
@@ -154,9 +157,10 @@ public class Monster extends GameObjectPoolable {
 			myArrowQueue.enqueue(currentArrowBeingEnqueued);
 			myArrowArray.add(currentArrowBeingEnqueued);
 			appendAnotherArrowDelay.setLength(1115 + Globals.getRandomGenerator().nextInt(1000) + Globals.getRandomGenerator().nextInt(100) + Globals.getRandomGenerator().nextInt(27));  //This will make the arrows look like they are trying to follow the song; In all kinds of patterns; The minimum delay between arrows is 5 ms;
-			if(!(Globals.randomGenerator.nextBoolean() || Globals.randomGenerator2.nextBoolean() || Globals.randomGenerator3.nextBoolean())){  //Low chance of happening
-				appendAnotherArrowDelay.setLength(15 + Globals.getRandomGenerator().nextInt(127)); //Variety
-			}
+		 /* if((Globals.randomGenerator.nextBoolean() && Globals.randomGenerator.nextBoolean() &&  Globals.randomGenerator2.nextBoolean() && Globals.randomGenerator2.nextBoolean() && Globals.randomGenerator3.nextBoolean() && Globals.randomGenerator3.nextBoolean())){  //Low chance of happening
+				currentArrowBeingEnqueued = arrowUIPool.obtain();
+				currentArrowBeingEnqueued.initDoubleArrow(monsterArrowDirection);		System.out.println("And you feel wasted on youself");
+			}*/  //Needs fixing!
 			appendAnotherArrowDelay.start();					//System.out.println(appendAnotherArrowDelay.getLength());
 		}
 	}

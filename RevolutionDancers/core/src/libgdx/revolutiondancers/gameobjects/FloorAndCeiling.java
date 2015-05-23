@@ -3,6 +3,7 @@ package libgdx.revolutiondancers.gameobjects;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 
 import libgdx.revolutiondancers.engine.GameObjectDisposable;
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.GlobalAssets;
 import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.screens.ScreenAbstract;
 
@@ -23,10 +25,13 @@ public class FloorAndCeiling extends GameObjectPoolable {
 	public ModelInstance modelInstanceFloor, modelInstanceCeiling;
 	public static float floorY, ceilingY;
 	
-	public TextureRegion floorTexture = new TextureRegion(Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Floor/4.png", Texture.class));
-	public TextureRegion ceilingTexture = new TextureRegion(Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Ceiling/4.png", Texture.class));
+	public Texture floorTexture; 
+	public Texture ceilingTexture;
 	
-	public FloorAndCeiling(float x, float z) {
+	public FloorAndCeiling(float x, float z, int myGroup) {
+		floorTexture = GlobalAssets.getFloorTexture(myGroup);		floorTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		ceilingTexture = GlobalAssets.getCeilingTexture(myGroup);   ceilingTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		
 		modelFloor = Globals.modelBuilder.createBox(Wall.width, 2f, Wall.depth, new Material(new TextureAttribute(TextureAttribute.Diffuse, floorTexture)), Usage.Position | Usage.TextureCoordinates);
 		modelInstanceFloor = new ModelInstance(modelFloor);
 		modelInstanceFloor.transform.setTranslation(x, Wall.y - Wall.height/1.88f, z);
