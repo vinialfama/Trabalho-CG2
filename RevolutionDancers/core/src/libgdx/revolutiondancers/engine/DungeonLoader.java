@@ -23,20 +23,6 @@ public abstract class DungeonLoader {
 			System.out.println("Error loading map!			|MapReader Error|");
 		}
 		
-/*	       BufferedReader in = null; 
-	       try {
-	        	in = new BufferedReader(new InputStreamReader(Gdx.files.internal("RevolutionDancersAssets/Maps/"+file).read()));
-	            String currentLineString;
-	            int mapColumnStringJ;
-	            while ((currentLineString = in.readLine()) != null) {			//Each row contains an ENTIRE line; Later to obtain information from it it is necessary to iterate each char;													
-	            	map.get(mapColumnStringJ).add(currentLineString);  			//To find the next row, one has to enter what column it is;
-	                mapColumnStringJ++;
-	            }
-	        } catch (Throwable e) {
-	            System.out.println("IOException");
-	        }*/
-		
-		
 	}
 	
 	public static String getTile(int x, int z) {

@@ -222,8 +222,8 @@ public class Monster extends GameObjectPoolable {
 	}
 	
 	@Override
-	public void update() {  
-		
+	public void update() {  			//UPDATE - CORRIGIR!!!  :  Quando a Arrow passar da caixa das setas, tirar ela da fila mas deixar ela sendo renderizada no Array;
+										//						   Assim as setas velhas nao atrapalham o gameplay!!
 		populateMyArrowQueue();			
 		
 		boolean dequeuedStuff = false;					

@@ -28,7 +28,12 @@ public class FloorAndCeiling extends GameObjectPoolable {
 	public Texture floorTexture; 
 	public Texture ceilingTexture;
 	
-	public FloorAndCeiling(float x, float z, int myGroup) {
+	public void init(float x, float z, int myGroup) {
+		this.x = x;
+		this.z = z;
+		boundingBox.x = x;
+		boundingBox.y = z;
+		
 		floorTexture = GlobalAssets.getFloorTexture(myGroup);		floorTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		ceilingTexture = GlobalAssets.getCeilingTexture(myGroup);   ceilingTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		
@@ -43,6 +48,12 @@ public class FloorAndCeiling extends GameObjectPoolable {
 		//model = Globals.modelBuilder.createBox(width, height, depth, new Material(new TextureAttribute(TextureAttribute.Diffuse, texture)), Usage.Position | Usage.TextureCoordinates);
 	}
 	
+
+
+	public FloorAndCeiling() {
+		// TODO Auto-generated constructor stub
+	}
+
 
 
 	@Override

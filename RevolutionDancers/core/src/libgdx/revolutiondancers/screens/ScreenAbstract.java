@@ -23,7 +23,7 @@ public abstract class ScreenAbstract implements Screen, ControllerListener, Inpu
 	/////////////////////3D////////////////////////
 	
 	//ObjectSets arent ordered; Object sets are O(1) for contains, insert and remove operations [O(logN) when there are collisions]; They are implemented using Cuckoo Hashing [Currently the most advanced and efficient Hashing technique]; The bad part is: Their space-complexity is a little expensive;
-	protected static final Array<GameObject> objects3D = new Array<GameObject>();  //Our objects Array needs to be ordered, so it isnt an ObjectSet; Also, Arrays can perform the removeAll operation when given another Array to work with; Which is important!;
+	public static final Array<GameObject> objects3D = new Array<GameObject>();  //Our objects Array needs to be ordered, so it isnt an ObjectSet; Also, Arrays can perform the removeAll operation when given another Array to work with; Which is important!;
 	protected static final ObjectSet<GameObjectPoolable> addLaterObjects3D = new ObjectSet<GameObjectPoolable>();
 	protected static final ObjectSet<GameObjectDisposable> disposeMeLaterDisposableObjects3D = new ObjectSet<GameObjectDisposable>();
 	protected static final ObjectSet<GameObjectPoolable> freeMeLaterPoolableObjects3D = new ObjectSet<GameObjectPoolable>();
@@ -81,7 +81,7 @@ public abstract class ScreenAbstract implements Screen, ControllerListener, Inpu
 	
 	public static final SpriteBatch spriteBatch = new SpriteBatch();  //Sprites and UI Elements; Etc; Any kind of 2D rendering in general;
 	
-	protected static final Array<GameObject> objects2D = new Array<GameObject>();  //Our objects Array needs to be ordered, so it isnt an ObjectSet; Also, Arrays can perform the removeAll operation when given another Array to work with; Which is important!;
+	public static final Array<GameObject> objects2D = new Array<GameObject>();  //Our objects Array needs to be ordered, so it isnt an ObjectSet; Also, Arrays can perform the removeAll operation when given another Array to work with; Which is important!;
 	protected static final ObjectSet<GameObjectPoolable> addLaterObjects2D = new ObjectSet<GameObjectPoolable>();
 	protected static final ObjectSet<GameObjectDisposable> disposeMeLaterDisposableObjects2D = new ObjectSet<GameObjectDisposable>();
 	protected static final ObjectSet<GameObjectPoolable> freeMeLaterPoolableObjects2D = new ObjectSet<GameObjectPoolable>();

@@ -1,5 +1,10 @@
 package libgdx.revolutiondancers.engine;
 
+import libgdx.revolutiondancers.gameobjects.Wall;
+
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.collision.BoundingBox;
+
 
 /*
  * A razao desta classe existir eh permitir que GameObject e GameObjectPoolable 
@@ -8,6 +13,9 @@ package libgdx.revolutiondancers.engine;
 public abstract class GameObject {
 	
 	public float x, y , z;  //Z is only for 3D gameObjects
+	
+	public Rectangle boundingBox = new Rectangle(x, z, Wall.width, Wall.depth);
+	
 	
 	//Used to check if the game object has to be reset or disposed
 	protected boolean resetMe = false;

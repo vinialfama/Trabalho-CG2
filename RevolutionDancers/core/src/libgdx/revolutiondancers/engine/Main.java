@@ -43,7 +43,7 @@ public class Main extends Game {
 		
 		Player.firstPersonCamera.position.set(50f, 1f, 50f); //Colocar a position de acordo com a posicao de inicio da jogadora no mapa!
 		Player.firstPersonCamera.near = 1f;
-		Player.firstPersonCamera.far = 800f;
+		Player.firstPersonCamera.far = 480f;
 		Player.firstPersonCamera.update();
 		current3DViewport = Player.firstPersonCameraViewport; //The first Camera (the one the Game starts in) is the Player first person point of view camera;		
 		
