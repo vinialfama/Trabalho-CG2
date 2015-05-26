@@ -3,38 +3,39 @@ package libgdx.revolutiondancers.gameobjects;
 import com.badlogic.gdx.math.Rectangle;
 
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.screens.GameScreen;
 
 //Collect all MojoGems!! Scattered around the map.
 //They drop from enemies too, btw;
 public class MojoGem extends GameObjectPoolable {
 
 	
-	public float centrePosX;
-	public float centrePosY;
-	public float width;
-	public float height;
-	public Rectangle bounds;
-	
-	public MojoGem(float centrePosX, float centrePosY, float width, float height) {
-		this.centrePosX = centrePosX;
-		this.centrePosY = centrePosY;
-		this.width = width;
-		this.height = height;
-		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
+	public void init(float x, float z){
+		GameScreen.mojoGemAmount++;
+		this.x = x ;
+		this.z = z ;			
+		boundingBox.x = x;
+		boundingBox.y = z;
+			//Model bla bla bla
 	}
 	
 	
+	public MojoGem() {
+		// TODO Auto-generated constructor stub
+	}
+
+
 	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	/*@Override
 	public void init(float x, float y) {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 	@Override
 	public void input() {
@@ -95,7 +96,6 @@ public class MojoGem extends GameObjectPoolable {
 		// TODO Auto-generated method stub
 		
 	}
-
 
 	@Override
 	public void init(float x, float y, float z) {

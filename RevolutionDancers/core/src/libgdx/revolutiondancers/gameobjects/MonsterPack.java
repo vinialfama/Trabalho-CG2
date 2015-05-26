@@ -16,14 +16,23 @@ import libgdx.revolutiondancers.screens.ScreenAbstract;
  * **/
 public class MonsterPack extends GameObjectPoolable {
 
+	public short deadOnThePack = 0;
 	public final Monster[] monsterPack = new Monster[4];
 	public boolean battleEnded; //This is more like a meditative game by now; There isnt really a lose condition, if you miss keys it just takes longer to complete the song and that Monster will attack you; So theres no 'playerHasWon' condition;
 								//But we can still think about that later and just put a float playerLife or something; And always show a 'Your Dead' screen when it reaches zero or below zero;
+	public boolean isCurrent;
 	
 	//A monster pack has a Sprite representation inside the 3D world; The correspondent sprite is the 'leader' of the pack;
 	//It is always facing the player, like a Wolfeinstein/Doom character;
 	@Override
 	public void init(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		boundingBox.set(x, z, 4*Wall.width, 4*Wall.depth);
+		battleEnded = false;
+		isCurrent = true;
+		
 		for(short i = 0; i < monsterPack.length; i++){
 			monsterPack[i] = GameScreen.monsterPool.obtain();
 			monsterPack[i].init(x, y, z, ArrowDirection.values()[i]);
@@ -85,7 +94,7 @@ public class MonsterPack extends GameObjectPoolable {
 	////////////////////////////////////////////////
 	@Override
 	public void input() {
-		if(GameScreen.isInBattle())
+		if(GameScreen.isInBattle() && isCurrent)
 		{
 			for (Monster monster : monsterPack) {
 				monster.input();
@@ -95,8 +104,7 @@ public class MonsterPack extends GameObjectPoolable {
 
 	@Override
 	public void update() {
-		short deadOnThePack = 0;
-		if(GameScreen.isInBattle())
+		if(GameScreen.isInBattle() && isCurrent)
 		{
 			for (Monster monster : monsterPack) {
 				monster.update();
@@ -105,7 +113,7 @@ public class MonsterPack extends GameObjectPoolable {
 		//Do decisions about the battle;
 		//Warn the screen by setting up flags, etc;
 		
-			if(deadOnThePack <= 4) {
+			if(deadOnThePack >= 4) {
 				for (Monster monster : monsterPack) {
 					GameScreen.monsterPool.free(monster); 
 				}
@@ -121,7 +129,7 @@ public class MonsterPack extends GameObjectPoolable {
 
 	@Override
 	public void draw() {
-		if(GameScreen.isInBattle())
+		if(GameScreen.isInBattle() && isCurrent)
 		{
 			for (Monster monster : monsterPack) {
 				monster.draw();

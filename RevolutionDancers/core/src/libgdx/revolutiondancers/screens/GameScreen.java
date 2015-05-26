@@ -8,13 +8,16 @@ import libgdx.revolutiondancers.engine.GameObjectPoolable;
 import libgdx.revolutiondancers.engine.GlobalAssets;
 import libgdx.revolutiondancers.engine.Globals;
 import libgdx.revolutiondancers.engine.Main;
+import libgdx.revolutiondancers.gameobjects.ArrowUI;
 import libgdx.revolutiondancers.gameobjects.Chest;
 import libgdx.revolutiondancers.gameobjects.Door;
 import libgdx.revolutiondancers.gameobjects.ArrowUI.ArrowDirection;
+import libgdx.revolutiondancers.gameobjects.Chest.ChestState;
 import libgdx.revolutiondancers.gameobjects.Door.DoorState;
 import libgdx.revolutiondancers.gameobjects.Exit;
 import libgdx.revolutiondancers.gameobjects.FloorAndCeiling;
 import libgdx.revolutiondancers.gameobjects.Key;
+import libgdx.revolutiondancers.gameobjects.Key.KeyType;
 import libgdx.revolutiondancers.gameobjects.MojoGem;
 import libgdx.revolutiondancers.gameobjects.Monster;
 import libgdx.revolutiondancers.gameobjects.MonsterPack;
@@ -22,6 +25,7 @@ import libgdx.revolutiondancers.gameobjects.Player;
 import libgdx.revolutiondancers.gameobjects.Wall;
 import libgdx.revolutiondancers.pools.ChestPool;
 import libgdx.revolutiondancers.pools.DoorPool;
+import libgdx.revolutiondancers.pools.ExitPool;
 import libgdx.revolutiondancers.pools.FloorAndCeilingPool;
 import libgdx.revolutiondancers.pools.KeyPool;
 import libgdx.revolutiondancers.pools.MojoGemPool;
@@ -58,6 +62,7 @@ public class GameScreen extends ScreenAbstract {
 	public static final WallPool wallPool = new WallPool();
 	public static final FloorAndCeilingPool floorAndCeilingPool = new FloorAndCeilingPool();
 	public static final DoorPool doorPool = new DoorPool();
+	public static final ExitPool exitPool = new ExitPool();
 	public static final KeyPool  keyPool  = new KeyPool();
 	public static final ChestPool chestPool = new ChestPool();
 	public static final MojoGemPool mojoGemPool = new MojoGemPool();
@@ -66,19 +71,23 @@ public class GameScreen extends ScreenAbstract {
 	public static MonsterPack currentMonsterPackBeingFought;	//What monster pack to display on the screen when a Fight happens!
 	public static Monster leftMonster, rightMonster, upMonster, downMonster; //Whatever the current Monsters in a battle are; Update these whenever a battle starts;
 	
-	public static Music notSoRandomEncounterMusic = Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/randomEncounterMusic.mp3", Music.class);
+	public static Music notSoRandomEncounterMusic = Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/randomEncounterMusic.wav", Music.class);
 	public static Music battleMusic;
 	public static Music dungeonMusic;
 	
 	public static final Player player = new Player();		public float playerInitialX, playerInitialZ;
 	public Wall wall;
 	public static FloorAndCeiling floorAndCeiling;
+	public static MonsterPack monsterPack;
 	public Door door;
+	public Exit exit;
 	public Key key;		public static int keyAmount = 0; 	public static int inventoryKeys = 0; 	public boolean hasExitKey = false;
 	public Chest chest;
-	public MojoGem gem;	public static int mojoGemAmount = 0; public static int inventoryMojoGems = 0;
+	public MojoGem mojoGem;	public static int mojoGemAmount = 0; public static int inventoryMojoGems = 0;
 	private static int currentDungeonNumber = 0;
 	private static int currentDungeonDifficulty = 3;
+	private boolean nextDungeon = false;
+	
 	
 	public GameScreen() {											//inBattle = true;  //Testes
 		inputMultiplexer.addProcessor(this);				
@@ -110,13 +119,18 @@ public class GameScreen extends ScreenAbstract {
 	
 	public void nextDungeon() {
 		
+		ScreenAbstract.objects2D.clear();
+		ScreenAbstract.objects3D.clear();
+		resetAndDisposeObjects2D();
+		resetAndDisposeObjects3D();
 		inventoryMojoGems = 0;
 		inventoryKeys = 0;
 		hasExitKey = false;
+		nextDungeon = false;
 		
 		dungeonMusic = GlobalAssets.getRandomDungeonMusic();          //GlobalAssets.getRandomBattleMusic();   //Testes
 		dungeonMusic.setLooping(true);
-			//dungeonMusic.play();			//Commented for now [Because Im listening to the Guardians of The Galaxy OST]
+		//dungeonMusic.play();			//Commented for now [Because Im listening to the Guardians of The Galaxy OST]
 	
 		
 			//DungeonGenerator.nextDungeon(5);
@@ -140,6 +154,7 @@ public class GameScreen extends ScreenAbstract {
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
 					Player.firstPersonCamera.position.set(x *Wall.width, Player.y, DungeonLoader.getMap().size +z *Wall.depth);			//Ainda esta spawnando no lugar errado
+					player.collidedThisFrame = false;
 					playerInitialX = x *Wall.width; playerInitialZ =  DungeonLoader.getMap().size +z *Wall.depth;
 				}
 				
@@ -220,98 +235,178 @@ public class GameScreen extends ScreenAbstract {
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//exits.add(new Exit(x, DungeonLoader.getMap().size+z, 0.75f, 0.75f));
+					exit = exitPool.obtain();
+					exit.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
+					objects3D.add(exit);
 				}
 				
 				
-				if (DungeonLoader.getTile(x, z).equals("M")) {		//Fim
+				if (DungeonLoader.getTile(x, z).equals("M")) {		//Monstro
 					// Monster Pack
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
+					
+					monsterPack = monsterPackPool.obtain();
+					monsterPack.init(x *Wall.width, Player.y,DungeonLoader.getMap().size+z *Wall.depth);
+					objects3D.add(monsterPack);
 				}
 
-				if (DungeonLoader.getTile(x, z).equals("G")) {
+				if (DungeonLoader.getTile(x, z).equals("G")) {		//Gema
 					// Generate gems
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					mojoGemAmount++;
-					//mojoGems.add(new MojoGem(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+					
+					mojoGem = mojoGemPool.obtain();
+					mojoGem.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth);
+					objects3D.add(mojoGem);
 				}
-				if (DungeonLoader.getTile(x, z).equals("U")) {
+				
+				
+				//Doors
+				if (DungeonLoader.getTile(x, z).equals("N")) {		//UNLOCKED
 					// Generate unlocked doors
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//doors.add(new Door(x, DungeonLoader.getMap().size+z, 1.0f, 1.0f, DoorState.CLOSED));
+					door = doorPool.obtain();
+					door.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, DoorState.UNLOCKED);
+					objects3D.add(door);
 				}
-				if (DungeonLoader.getTile(x, z).equals("L")) {
+				if (DungeonLoader.getTile(x, z).equals("T")) {		//LOCKED
 					// Generate locked doors
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//doors.add(new Door(x, DungeonLoader.getMap().size+z, 1.0f, 1.0f, DoorState.LOCKED));
-				}
-				if (DungeonLoader.getTile(x, z).equals("K")) {
-					// Generate keys
-					floorAndCeiling = floorAndCeilingPool.obtain();
-					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
-					objects3D.add(floorAndCeiling);
-					keyAmount++;
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
-				}
-				if (DungeonLoader.getTile(x, z).equals("*")) {  //Goal Key
-					// Generate keys
-					floorAndCeiling = floorAndCeilingPool.obtain();
-					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
-					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+					door = doorPool.obtain();
+					door.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, DoorState.LOCKED);
+					objects3D.add(door);
 				}
 				
-				if (DungeonLoader.getTile(x, z).equals("&")) {  //Unlocked Chest with Exit Key
-					// Generate keys
+				
+				//Keys
+				if (DungeonLoader.getTile(x, z).equals("K")) {		//GOLDEN
+					// Generate golden keys
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+
+					key = keyPool.obtain();
+					key.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, KeyType.GOLDEN);
+					objects3D.add(key);
 				}
-				if (DungeonLoader.getTile(x, z).equals("%")) {  //Unlocked Chest with Key
-					// Generate keys
+				if (DungeonLoader.getTile(x, z).equals("P")) {		//SILVER
+					// Generate silver keys
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
-				}
-				if (DungeonLoader.getTile(x, z).equals("$")) {  //Unlocked Chest with MojoGem
-					// Generate keys
-					floorAndCeiling = floorAndCeilingPool.obtain();
-					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
-					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+					
+					key = keyPool.obtain();
+					key.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, KeyType.SILVER);
+					objects3D.add(key);
 				}
 				
-				if (DungeonLoader.getTile(x, z).equals("!")) {  //Locked Chest with Exit Key
+				
+				//Baus				
+				if (DungeonLoader.getTile(x, z).equals("O")) { //Destrancado
 					// Generate keys
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.UNLOCKED, null);
+					objects3D.add(chest);
 				}
-				if (DungeonLoader.getTile(x, z).equals("@")) {  //Locked Chest with Key
+				if (DungeonLoader.getTile(x, z).equals("L")) {  //Trancado
 					// Generate keys
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.LOCKED, null);
+					objects3D.add(chest);
 				}
-				if (DungeonLoader.getTile(x, z).equals("#")) {  //Locked Chest with MojoGem
+				if (DungeonLoader.getTile(x, z).equals("H")) {  //Com Gema Trancado
 					// Generate keys
 					floorAndCeiling = floorAndCeilingPool.obtain();
 					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
 					objects3D.add(floorAndCeiling);
-					//keys.add(new Key(x, DungeonLoader.getMap().size+z, 0.5f, 0.5f));
+					
+					mojoGem = mojoGemPool.obtain();
+					mojoGem.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth);
+					
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.LOCKED, mojoGem);
+					objects3D.add(chest);
 				}
+				if (DungeonLoader.getTile(x, z).equals("J")) {  //Com Gema Destrancado
+					// Generate keys
+					floorAndCeiling = floorAndCeilingPool.obtain();
+					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
+					objects3D.add(floorAndCeiling);
+					
+					mojoGem = mojoGemPool.obtain();
+					mojoGem.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth);
+					
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.UNLOCKED, mojoGem);
+					objects3D.add(chest);
+				}
+				
+				if (DungeonLoader.getTile(x, z).equals("z")) {  //Com chave prateada trancado
+					// Generate keys
+					floorAndCeiling = floorAndCeilingPool.obtain();
+					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
+					objects3D.add(floorAndCeiling);
+					
+					key = keyPool.obtain();
+					key.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, KeyType.SILVER);
+					
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.LOCKED, key);
+					objects3D.add(chest);
+				}
+				if (DungeonLoader.getTile(x, z).equals("x")) {  //Com chave prateada destrancado
+					// Generate keys
+					floorAndCeiling = floorAndCeilingPool.obtain();
+					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
+					objects3D.add(floorAndCeiling);
+					
+					key = keyPool.obtain();
+					key.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, KeyType.SILVER);
+					
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.UNLOCKED, key);
+					objects3D.add(chest);
+				}
+				if (DungeonLoader.getTile(x, z).equals("v")) {  //Com chave dourada trancado
+					// Generate keys
+					floorAndCeiling = floorAndCeilingPool.obtain();
+					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
+					objects3D.add(floorAndCeiling);
+					
+					key = keyPool.obtain();
+					key.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, KeyType.GOLDEN);
+					
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.LOCKED, key);
+					objects3D.add(chest);
+				}
+				if (DungeonLoader.getTile(x, z).equals("R")) {  //Com chave dourada destrancado
+					// Generate keys
+					floorAndCeiling = floorAndCeilingPool.obtain();
+					floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, createFloorAndCeiling(x, z, lastGroupIndex, lastGroupIndexChar));
+					objects3D.add(floorAndCeiling);
+					
+					key = keyPool.obtain();
+					key.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, KeyType.GOLDEN);
+					
+					chest = chestPool.obtain();
+					chest.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, ChestState.UNLOCKED, key);
+					objects3D.add(chest);
+				}
+				
 				
 			}
 		}
@@ -344,9 +439,10 @@ public class GameScreen extends ScreenAbstract {
 	
 	
 	public void nextBattle() {
-		inBattle = true;
-		//battleMusic = 
-		//battleMusic.setLooping(true);
+		//inBattle = true;
+		battleMusic = GlobalAssets.getRandomBattleMusic();   
+		battleMusic.setLooping(true);
+		battleMusic.play();
 	}
 	
 	public void updateCurrentMonsters(){
@@ -561,7 +657,11 @@ public class GameScreen extends ScreenAbstract {
 	}
 	
 	
-	public void update(){
+	public void update(){		
+		
+		if(nextDungeon){
+			nextDungeon();
+		}
 	
 		//Update cameras///////////////////////////////////
 		Main.getInstance().current2DViewport.getCamera().update();
@@ -593,13 +693,106 @@ public class GameScreen extends ScreenAbstract {
 	    /////////////////////2D////////////////////////
 	    /////////////////////3D////////////////////////
 		
+	  if(inBattle && !battleMusic.isPlaying()){
+			if(!notSoRandomEncounterMusic.isPlaying() && !battleMusic.isPlaying()) {   
+				battleMusic.setLooping(true);
+				battleMusic.play();
+			}
+		}
+		
+			
+		if(inBattle && currentMonsterPackBeingFought.battleEnded) {
+			currentMonsterPackBeingFought.isCurrent = false;
+			inBattle = false;
+			dungeonMusic.play();
+			battleMusic.stop();
+		}
+			
 		for (GameObject gameObject : objects3D) {
 			gameObject.input();						
 			gameObject.update();
 			
 
-			if(!(gameObject instanceof FloorAndCeiling || gameObject instanceof Player)) {
-				if(player.boundingBox.overlaps(gameObject.boundingBox)) player.collidedThisFrame = true;
+			if(!(gameObject instanceof FloorAndCeiling || gameObject instanceof Player)) {				
+				if(player.boundingBox.overlaps(gameObject.boundingBox)) {
+					player.collidedThisFrame = true;
+					
+					if(!inBattle && gameObject instanceof MonsterPack) {
+						player.collidedThisFrame = false;
+						currentMonsterPackBeingFought = (MonsterPack) gameObject;
+						currentMonsterPackBeingFought.isCurrent = true;
+						inBattle = true;
+						dungeonMusic.stop();
+						notSoRandomEncounterMusic.play();
+						battleMusic = GlobalAssets.getRandomBattleMusic();
+						//nextBattle();
+					}
+					
+					if(gameObject instanceof Exit) { 
+						if(mojoGemAmount == inventoryMojoGems && hasExitKey) {
+							nextDungeon = true;
+							player.collidedThisFrame = false;
+						}
+					}
+					
+					if(gameObject instanceof Door) { 
+						switch(((Door) gameObject).state){
+						case LOCKED:							
+							if(inventoryKeys > 0)	{					
+								doorPool.free((Door) gameObject);
+								ScreenAbstract.freePoolableObject3D((GameObjectPoolable)gameObject);
+								player.collidedThisFrame = false;
+								inventoryKeys--;
+							}
+							else player.collidedThisFrame = true;
+							
+							break;
+						case UNLOCKED: 						
+							doorPool.free((Door) gameObject);
+							ScreenAbstract.freePoolableObject3D((GameObjectPoolable)gameObject);
+							player.collidedThisFrame = false;
+							break;			
+						}
+					}
+					
+					if(gameObject instanceof Chest) { 
+						switch(((Chest) gameObject).state){
+						case LOCKED:
+							if(inventoryKeys > 0)	{						System.out.println("Unlocked!");
+								chestPool.free((Chest) gameObject);
+								ScreenAbstract.freePoolableObject3D((GameObjectPoolable)gameObject);
+								player.collidedThisFrame = false;
+								inventoryKeys--;
+								((Chest) gameObject).spawnTreasure();
+							}
+							else player.collidedThisFrame = true;
+							
+							break;
+						case UNLOCKED: 						
+							chestPool.free((Chest) gameObject);
+							ScreenAbstract.freePoolableObject3D((GameObjectPoolable)gameObject);
+							player.collidedThisFrame = false;
+							((Chest) gameObject).spawnTreasure();
+							break;			
+						}
+					}
+					
+					
+					if(gameObject instanceof MojoGem) { 	System.out.println("Got MojoGem!");
+						inventoryMojoGems++;
+						mojoGemPool.free((MojoGem) gameObject);
+						ScreenAbstract.freePoolableObject3D((GameObjectPoolable)gameObject);
+						player.collidedThisFrame = false;
+					}
+					if(gameObject instanceof Key) { 	System.out.println("Got Key!");
+						if(((Key) gameObject).type.toString().equalsIgnoreCase("SILVER")) inventoryKeys++;
+						if(((Key) gameObject).type.toString().equalsIgnoreCase("GOLDEN")) hasExitKey = true;
+						keyPool.free((Key) gameObject);
+						ScreenAbstract.freePoolableObject3D((GameObjectPoolable)gameObject);
+						player.collidedThisFrame = false;
+					}
+					
+				}
 				//if(!player.boundingBox.overlaps(gameObject.boundingBox)) player.collidedThisFrame = false;
 			}
 			
@@ -677,6 +870,13 @@ public class GameScreen extends ScreenAbstract {
 				gameObject.draw();			
 			}
 
+		}
+		if(currentMonsterPackBeingFought!= null && inBattle){
+			for (Monster monster : currentMonsterPackBeingFought.monsterPack) {
+				for (ArrowUI arrowUI : monster.myArrowArray) {
+						arrowUI.draw();
+				}
+			}
 		}
 		ScreenAbstract.spriteBatch.end();		
 		/////////////////////2D////////////////////////

@@ -3,9 +3,11 @@ package libgdx.revolutiondancers.gameobjects;
 import libgdx.revolutiondancers.engine.Delay;
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
 import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.engine.Main;
 import libgdx.revolutiondancers.gameobjects.ArrowUI.ArrowDirection;
 import libgdx.revolutiondancers.pools.ArrowUIPool;
 import libgdx.revolutiondancers.screens.GameScreen;
+import libgdx.revolutiondancers.screens.ScreenAbstract;
 import sun.misc.Queue;
 
 import com.badlogic.gdx.Gdx;
@@ -132,7 +134,7 @@ public class Monster extends GameObjectPoolable {
 		
 	}
 	
-	public void takeDamage(){
+	public void takeDamage(){			lifeAmount -= 30;  //Testes
 		
 		if(lifeAmount <= 0) {   System.out.println("Im dead!");
 			return;
@@ -156,6 +158,7 @@ public class Monster extends GameObjectPoolable {
 			currentArrowBeingEnqueued.init(monsterArrowDirection);
 			myArrowQueue.enqueue(currentArrowBeingEnqueued);
 			myArrowArray.add(currentArrowBeingEnqueued);
+			//ScreenAbstract.addLaterPoolableObject2D(currentArrowBeingEnqueued);
 			appendAnotherArrowDelay.setLength(1115 + Globals.getRandomGenerator().nextInt(1000) + Globals.getRandomGenerator().nextInt(100) + Globals.getRandomGenerator().nextInt(27));  //This will make the arrows look like they are trying to follow the song; In all kinds of patterns; The minimum delay between arrows is 5 ms;
 		 /* if((Globals.randomGenerator.nextBoolean() && Globals.randomGenerator.nextBoolean() &&  Globals.randomGenerator2.nextBoolean() && Globals.randomGenerator2.nextBoolean() && Globals.randomGenerator3.nextBoolean() && Globals.randomGenerator3.nextBoolean())){  //Low chance of happening
 				currentArrowBeingEnqueued = arrowUIPool.obtain();
@@ -222,17 +225,14 @@ public class Monster extends GameObjectPoolable {
 	}
 	
 	@Override
-	public void update() {  			//UPDATE - CORRIGIR!!!  :  Quando a Arrow passar da caixa das setas, tirar ela da fila mas deixar ela sendo renderizada no Array;
-										//						   Assim as setas velhas nao atrapalham o gameplay!!
-		populateMyArrowQueue();			
-		
-		boolean dequeuedStuff = false;					
-
-		for (ArrowUI arrowUI : myArrowArray) {
+	public void update() {  			
+	
+		/*for (ArrowUI arrowUI : myArrowArray) {
 			arrowUI.update();
 			if(arrowUI.passedTheScreenEnd) { //Then it must be the first-out on the Queue;
 			  if(!myArrowQueue.isEmpty()) {			  												try {
 						currentArrowBeingDequeued = myArrowQueue.dequeue(); 					   }catch (InterruptedException erroInutil) { erroInutil.printStackTrace();}	
+			  			//ScreenAbstract.freePoolableObject2D(currentArrowBeingDequeued);
 			  			dequeuedStuff = true;
 			 
 			  }
@@ -242,14 +242,50 @@ public class Monster extends GameObjectPoolable {
 			if(dequeuedStuff){
 				arrowUIPool.free(currentArrowBeingDequeued);
 				myArrowArray.removeValue(currentArrowBeingDequeued, false);
+			}*/
+			
+		if(GameScreen.battleMusic.isPlaying()){
+			
+			populateMyArrowQueue();			
+			
+			boolean dequeuedStuff = false;
+			
+		for (ArrowUI arrowUI : myArrowArray) {
+				arrowUI.update();
+			if(arrowUI.passedTheScreenEnd) { //Then it must be the first-out on the Queue;
+			  if(!myArrowQueue.isEmpty()) {			  												
+			  			//ScreenAbstract.freePoolableObject2D(currentArrowBeingDequeued);
+			  			arrowUIPool.free(currentArrowBeingDequeued);
+			  			dequeuedStuff = false;
+			  }
 			}
+			
+			  if(arrowUI.passedTheHitBox){
+				  if(!myArrowQueue.isEmpty()) {			  												try {
+						currentArrowBeingDequeued = myArrowQueue.dequeue(); 					   }catch (InterruptedException erroInutil) { erroInutil.printStackTrace();}	
+			  			dequeuedStuff = true;		//Quando a Arrow passar da caixa das setas, tira ela da fila mas deixar ela sendo renderizada no Array;	  										
+			  }
+			}
+
+		}
+			if(dequeuedStuff){
+				myArrowArray.removeValue(currentArrowBeingDequeued, false);
+			}
+			  
+		}	
+			
+			
 	}
 
 	@Override
 	public void draw() {
+		/*ScreenAbstract.spriteBatch.setProjectionMatrix(Main.getInstance().current2DViewport.getCamera().combined);
+		ScreenAbstract.spriteBatch.begin();
+	    ScreenAbstract.spriteBatch.enableBlending();
 		for (ArrowUI arrowUI : myArrowArray) {
 			arrowUI.draw();
 		}
+		ScreenAbstract.spriteBatch.end();*/
 	}
 	
 	////////////////////////////////////////////

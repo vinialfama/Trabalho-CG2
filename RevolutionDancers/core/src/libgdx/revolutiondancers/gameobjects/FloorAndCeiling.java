@@ -17,6 +17,7 @@ import libgdx.revolutiondancers.engine.GameObjectDisposable;
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
 import libgdx.revolutiondancers.engine.GlobalAssets;
 import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.screens.GameScreen;
 import libgdx.revolutiondancers.screens.ScreenAbstract;
 
 public class FloorAndCeiling extends GameObjectPoolable {
@@ -29,6 +30,7 @@ public class FloorAndCeiling extends GameObjectPoolable {
 	public Texture ceilingTexture;
 	
 	public void init(float x, float z, int myGroup) {
+		GameScreen.keyAmount++;
 		this.x = x;
 		this.z = z;
 		boundingBox.x = x;

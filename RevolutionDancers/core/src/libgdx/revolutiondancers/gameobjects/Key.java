@@ -5,25 +5,27 @@ import libgdx.revolutiondancers.engine.GameObjectPoolable;
 
 public class Key extends GameObjectPoolable{
 
-	
-	public float centrePosX;
-	public float centrePosY;
-	public float width;
-	public float height;
-	public Rectangle bounds;
-	public enum KeyType {SPECIAL, NORMAL};
+	public enum KeyType {GOLDEN, SILVER};
 	public KeyType type;
 	
 	public Key(float centrePosX, float centrePosY, float width, float height) {
-		this.centrePosX = centrePosX;
-		this.centrePosY = centrePosY;
-		this.width = width;
-		this.height = height;
-		this.type = KeyType.NORMAL;
-		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
+		//this.type = KeyType.NORMAL;
 	}
 	
-	public Key(float centrePosX, float centrePosY, float width, float height, boolean typeSpecial) {
+	public Key() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public void init(float x, float z, KeyType type){
+		this.x = x ;
+		this.z = z ;			
+		boundingBox.x = x;
+		boundingBox.y = z;
+		this.type = type;
+			//Model bla bla bla
+	}
+	
+/*	public Key(float centrePosX, float centrePosY, float width, float height, boolean typeSpecial) {
 		this.centrePosX = centrePosX;
 		this.centrePosY = centrePosY;
 		this.width = width;
@@ -31,7 +33,7 @@ public class Key extends GameObjectPoolable{
 		if(typeSpecial)  this.type = KeyType.SPECIAL;
 		else this.type = KeyType.NORMAL;
 		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
-	}
+	}*/
 	
 	public KeyType getKeyType(){
 		return type;

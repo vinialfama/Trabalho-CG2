@@ -1,43 +1,52 @@
 package libgdx.revolutiondancers.gameobjects;
 
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.Rectangle;
 
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.GlobalAssets;
+import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.gameobjects.Door.DoorState;
+import libgdx.revolutiondancers.screens.ScreenAbstract;
 
 //Chests may contain special keys inside; Special keys are sometimes necessary to unlock the level exit [From level 3 onwards]; 
 //Chests may contain MojoGems
 public class Chest extends GameObjectPoolable {
 
-	public float centrePosX;
-	public float centrePosY;
-	public float width;
-	public float height;
-	public Rectangle bounds;
-	public enum ChestState {LOCKED, CLOSED, OPEN};
+
+	public enum ChestState {LOCKED, UNLOCKED};
 	public ChestState state;
+
+	GameObjectPoolable treasure;
 	
-	
-	public Chest(float centrePosX, float centrePosY, float width, float height, ChestState state) {
-		this.centrePosX = centrePosX;
-		this.centrePosY = centrePosY;
-		this.width = width;
-		this.height = height;
+	public void init(float x, float z, ChestState state, GameObjectPoolable treasure) {
+		this.x = x ;
+		this.z = z ;			
+		boundingBox.set(x, z, 2*Wall.width, 2*Wall.depth);	
 		this.state = state;
-		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
+		
+		switch(state){
+		case LOCKED:  
+			break;
+		case UNLOCKED:  
+			break;		
+		}
+		
+		if(treasure != null) this.treasure = treasure;
+		else{
+			treasure = null;
+		}
+	
 	}
 	
-	public void open() {
-		state = ChestState.OPEN;
-		// TODO: auto close door after x seconds
-	}
-	
-	public void unlock() {
-		state = ChestState.CLOSED;
+	public void spawnTreasure() {
+		if(treasure == null) return;  //Bau vazio!
+		ScreenAbstract.addLaterPoolableObject3D(treasure);
 	}
 
-	public void close() {
-		state = ChestState.CLOSED;
-	}
 	
 	@Override
 	public void reset() {

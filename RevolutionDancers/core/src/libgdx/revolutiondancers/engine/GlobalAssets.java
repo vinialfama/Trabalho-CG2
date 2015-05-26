@@ -209,10 +209,10 @@ public abstract class GlobalAssets {
 		//Music
 		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/tittleScreen.wav", Music.class);
 		//notSoRandomEncounter
-		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/randomEncounterMusic.mp3", Music.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/randomEncounterMusic.wav", Music.class);
 		//Dungeon
-		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/Dungeon/0.mp3", Music.class);
-		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/Dungeon/1.mp3", Music.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/Dungeon/0.wav", Music.class);
+		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/Dungeon/1.wav", Music.class);
 		//Battle
 		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/Battle/0.mp3", Music.class);
 		Globals.assetManager.load("RevolutionDancersAssets/Audio/Music/Battle/1.mp3", Music.class);
@@ -291,9 +291,23 @@ public abstract class GlobalAssets {
 	
 	public static Music getRandomDungeonMusic(){
 		if(Globals.randomGenerator2.nextBoolean()){
-			return Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/Dungeon/0.mp3", Music.class);
+			return Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/Dungeon/0.wav", Music.class);
 		}
-		return Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/Dungeon/1.mp3", Music.class);
+		return Globals.assetManager.get("RevolutionDancersAssets/Audio/Music/Dungeon/1.wav", Music.class);
+	}
+	
+	public static Texture getRandomLockedDoor(){
+		if(Globals.randomGenerator2.nextBoolean()){
+			return Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Doors/0.png", Texture.class);
+		}
+		return Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Doors/5.png", Texture.class);
+	}
+
+	public static Texture getRandomUnlockedDoor(){
+		if(Globals.randomGenerator2.nextBoolean()){
+			return Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Doors/1.png", Texture.class);
+		}
+		return Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Doors/4.png", Texture.class);
 	}
 	
 	public static Music getRandomBattleMusic(){

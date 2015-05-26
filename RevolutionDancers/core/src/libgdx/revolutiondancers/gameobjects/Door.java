@@ -1,42 +1,56 @@
 package libgdx.revolutiondancers.gameobjects;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.Rectangle;
 
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.GlobalAssets;
+import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.screens.ScreenAbstract;
 
 public class Door extends GameObjectPoolable {
 
-	public float centrePosX;
-	public float centrePosY;
-	public float width;
-	public float height;
-	public Rectangle bounds;
-	public enum DoorState {LOCKED, CLOSED, OPEN};
+
+	public enum DoorState {LOCKED, UNLOCKED};
 	public DoorState state;
+
+	public Model model;
+	public ModelInstance modelInstance;
 	
+	public Texture texture;
 	
-	public Door(float centrePosX, float centrePosY, float width, float height, DoorState state) {
-		this.centrePosX = centrePosX;
-		this.centrePosY = centrePosY;
-		this.width = width;
-		this.height = height;
+	public void init(float x, float z, DoorState state) {
+		this.x = x ;
+		this.z = z ;			
+		boundingBox.x = x;
+		boundingBox.y = z;
+		
 		this.state = state;
-		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
+		
+		switch(state){
+		case LOCKED: texture = GlobalAssets.getRandomLockedDoor();
+			break;
+		case UNLOCKED: texture = GlobalAssets.getRandomUnlockedDoor();
+			break;		
+		}
+		
+		//texture = GlobalAssets.getWallTexture(myGroup);		texture.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
+		
+		model = Globals.modelBuilder.createBox(Wall.width, Wall.height, Wall.depth, new Material(new TextureAttribute(TextureAttribute.Diffuse, texture)), Usage.Position | Usage.TextureCoordinates);
+		modelInstance = new ModelInstance(model);			
+		modelInstance.transform.setTranslation(x, Wall.y, z);
+		modelInstance.transform.rotate(0, 0, 1, 90);
+		
+		/*GameScreen.floorAndCeiling = GameScreen.floorAndCeilingPool.obtain();
+		GameScreen.floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, 1);
+		ScreenAbstract.addLaterPoolableObject3D(GameScreen.floorAndCeiling);*/
 	}
 	
-	public void open() {
-		state = DoorState.OPEN;
-		// TODO: auto close door after x seconds
-	}
-	
-	public void unlock() {
-		state = DoorState.CLOSED;
-	}
-
-	public void close() {
-		state = DoorState.CLOSED;
-	}
-
 	
 	@Override
 	public void reset() {
@@ -46,24 +60,6 @@ public class Door extends GameObjectPoolable {
 
 	@Override
 	public void init(float x, float y) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void input() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void draw() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -115,5 +111,26 @@ public class Door extends GameObjectPoolable {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	@Override
+	public void input() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void draw() {
+		if(ScreenAbstract.rendering3D) {
+			ScreenAbstract.modelBatch.render(modelInstance, Globals.environment);			
+		}	
+	}
+	
 	
 }

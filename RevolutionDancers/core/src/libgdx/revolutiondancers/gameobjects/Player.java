@@ -294,7 +294,7 @@ public class Player extends GameObjectDisposable /*implements ControllerListener
 		}
 		
 		// For some flavor, lets spin our camera around the Y axis by 1 degree each time render is called
-		//firstPersonCamera.rotateAround(firstPersonCamera.position, Globals.usefulVector3.set(0,1,0),0.05f);
+		if(GameScreen.isInBattle()) firstPersonCamera.rotateAround(firstPersonCamera.position, Globals.usefulVector3.set(0,1,0),0.05f);
 	      // When you change the camera details, you need to call update();
 	      // Also note, you need to call update() at least once.
 		firstPersonCamera.update();

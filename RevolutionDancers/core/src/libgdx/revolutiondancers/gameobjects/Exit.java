@@ -1,42 +1,52 @@
 package libgdx.revolutiondancers.gameobjects;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.Rectangle;
+
+import libgdx.revolutiondancers.engine.DungeonLoader;
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
+import libgdx.revolutiondancers.engine.GlobalAssets;
+import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.screens.GameScreen;
+import libgdx.revolutiondancers.screens.ScreenAbstract;
 
 public class Exit extends GameObjectPoolable {
 	
-	public float centrePosX;
-	public float centrePosY;
-	public float width;
-	public float height;
-	public Rectangle bounds;
-	
-	public enum ExitState {LOCKED_SPECIAL, OPEN};
-	public ExitState state;
+/*	public enum ExitState {LOCKED_SPECIAL, OPEN};
+	public ExitState state;*/
 
+	public Model model;
+	public ModelInstance modelInstance;
 	
-	public Exit(float centrePosX, float centrePosY, float width, float height) {
-		this.centrePosX = centrePosX;
-		this.centrePosY = centrePosY;
-		this.width = width;
-		this.height = height;
-		unlock();
-		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
+	public Texture texture = Globals.assetManager.get("RevolutionDancersAssets/Graphics/2D/Doors/6.png", Texture.class);
+	
+	public void init(float x, float z, int myGroup) {
+		this.x = x ;
+		this.z = z ;			
+		boundingBox.x = x;
+		boundingBox.y = z;
+		
+		//texture = GlobalAssets.getWallTexture(myGroup);		texture.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
+		
+		model = Globals.modelBuilder.createBox(Wall.width, Wall.height, Wall.depth, new Material(new TextureAttribute(TextureAttribute.Diffuse, texture)), Usage.Position | Usage.TextureCoordinates);
+		modelInstance = new ModelInstance(model);			
+		modelInstance.transform.setTranslation(x, Wall.y, z);
+		modelInstance.transform.rotate(0, 0, 1, 90);
+		
+		/*GameScreen.floorAndCeiling = GameScreen.floorAndCeilingPool.obtain();
+		GameScreen.floorAndCeiling.init(x *Wall.width, DungeonLoader.getMap().size+z *Wall.depth, 1);
+		ScreenAbstract.addLaterPoolableObject3D(GameScreen.floorAndCeiling);*/
 	}
 	
-	public Exit(float centrePosX, float centrePosY, float width, float height, boolean locked_special) {
-		this.centrePosX = centrePosX;
-		this.centrePosY = centrePosY;
-		this.width = width;
-		this.height = height;
-		if(locked_special)  this.state = ExitState.LOCKED_SPECIAL;
-		else unlock();
-		bounds = new Rectangle(centrePosX - width/2, centrePosY - height/2, width, height);
-	}
-	
-	public void unlock() {
+	/*public void unlock() {
 		state = ExitState.OPEN;
-	}
+	}*/
 	
 	
 	@Override
@@ -50,25 +60,7 @@ public class Exit extends GameObjectPoolable {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void input() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void draw() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	@Override
 	public float getWidth() {
 		// TODO Auto-generated method stub
@@ -116,5 +108,25 @@ public class Exit extends GameObjectPoolable {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void input() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void draw() {
+		if(ScreenAbstract.rendering3D) {
+			ScreenAbstract.modelBatch.render(modelInstance, Globals.environment);			
+		}
+	}
+
 
 }

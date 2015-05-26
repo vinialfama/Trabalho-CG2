@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import libgdx.revolutiondancers.engine.GameObjectPoolable;
 import libgdx.revolutiondancers.engine.Globals;
+import libgdx.revolutiondancers.engine.Main;
 import libgdx.revolutiondancers.screens.GameScreen;
 import libgdx.revolutiondancers.screens.ScreenAbstract;
 
@@ -26,6 +27,7 @@ public class ArrowUI extends GameObjectPoolable {
 	public enum ArrowDirection{UP,DOWN,LEFT,RIGHT};
 	public ArrowDirection myArrowDirection; 
 	public boolean passedTheScreenEnd;
+	public boolean passedTheHitBox;
 	public boolean isDoubleArrow;
 	
 	@Override  //Do not use for this class:
@@ -109,6 +111,7 @@ public class ArrowUI extends GameObjectPoolable {
 	public void reset() {
 		isDoubleArrow = false;
 		passedTheScreenEnd = false;
+		passedTheHitBox = false;
 		y = 0;			//System.out.println("Resetted arrow here!");
 	}
 
@@ -122,18 +125,20 @@ public class ArrowUI extends GameObjectPoolable {
 
 	@Override
 	public void update() {
-		y += 2.45f;  
+		y += 2.45f;//2.45f;  
 		
 		//y += GameScreen.battleMusic.getVolume();   //Fix!!
 		
 		if(y >= Globals.WORLD_HEIGHT_MIN) {
 			passedTheScreenEnd = true;			
 		}
+		if(y >= GameScreen.danceDanceLayoutUIY + 28) passedTheHitBox = true; 
 	}
 
 	@Override
-	public void draw() {
-		{ //System.out.println("Promises");
+	public void draw() {  
+
+		{ 
 			 ScreenAbstract.spriteBatch.draw(myArrowSprite.getTexture(), x, y);
 			ScreenAbstract.spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_CONSTANT_COLOR);  //GL_ONE
 			ScreenAbstract.spriteBatch.setColor(Math.abs(Globals.getRandomGenerator().nextFloat()));
@@ -141,6 +146,7 @@ public class ArrowUI extends GameObjectPoolable {
 			ScreenAbstract.spriteBatch.setColor(Color.WHITE);
 			ScreenAbstract.spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		}
+
 	}
 	
 
